@@ -155,37 +155,87 @@ async function saveTeams16(){
 }
 async function saveGroups(){
   const b=$('saveGroups');
+  if(!auth.currentUser){setMsg('groupsMsg','Sesi login sudah habis. Login lagi.',true);return;}
   b.disabled=true;
-  setMsg('groupsMsg','Menyimpan Grup...');
+  setMsg('groupsMsg','Menyimpan Grup + data klasemen...');
   try{
-    const selected=readGroupDraftFromDOM();
-    const chosen=new Set();
+    const selected=getCurrentGroupSelections();
     const clean={A:['','','',''],B:['','','',''],C:['','','',''],D:['','','','']};
-    for(const g of GROUPS) for(let i=0;i<4;i++){
-      const id=selected[g][i]||'';
-      if(!id) continue; // boleh simpan bertahap; slot kosong tidak dianggap error
-      if(!/^T([1-9]|1[0-6])$/.test(id)) throw new Error(`Pilihan Grup ${g} baris ${i+1} tidak valid.`);
-      if(chosen.has(id)) throw new Error(`${teams[id]?.name||id} sudah dipilih di grup lain.`);
-      chosen.add(id);
-      clean[g][i]=id;
+    const chosen=new Set();
+
+    // Ambil SEMUA data yang sedang diedit di tabel Grup.
+    // Nama tim tetap berasal dari Master 16 Tim; angka klasemen disimpan ke /teams/Tx.
+    const nextTeams=ensure16(teams);
+    const statFields=[
+      ['main','gm'],
+      ['win','gw'],
+      ['draw','gdr'],
+      ['loss','gl'],
+      ['gf','gf'],
+      ['ga','ga'],
+      ['gd','gd'],
+      ['points','gp']
+    ];
+
+    for(const g of GROUPS){
+      for(let i=0;i<4;i++){
+        const id=selected[g][i]||'';
+        if(!/^T([1-9]|1[0-6])$/.test(id)){
+          throw new Error(`Grup ${g} baris ${i+1} belum memilih tim.`);
+        }
+        if(chosen.has(id)){
+          throw new Error(`${teams[id]?.name||id} sudah dipilih di grup lain.`);
+        }
+        chosen.add(id);
+        clean[g][i]=id;
+
+        const t=nextTeams[id]||defaultTeam(Number(id.slice(1)));
+        const updated={...t,group:g};
+        for(const [field,prefix] of statFields){
+          const el=$(`${prefix}_${g}_${i}`);
+          const value=el?.value==='' || el?.value==null ? 0 : Number(el.value);
+          if(!Number.isFinite(value) || value<0){
+            throw new Error(`Nilai ${field.toUpperCase()} Grup ${g} baris ${i+1} tidak valid.`);
+          }
+          updated[field]=value;
+        }
+        nextTeams[id]=updated;
+      }
     }
-    // Simpan struktur grup TERPISAH dari master 16 tim.
+
+    if(chosen.size!==16) throw new Error('Semua 16 Tim harus dipakai tepat satu kali di Grup A-D.');
+
+    // SATU kali simpan untuk data yang diedit: Master/klasemen + Grup.
+    await set(ref(db,'teams'),nextTeams);
     await set(ref(db,'groups'),clean);
-    // Simpan Grup sebagai sumber utama pilihan. Jangan mengubah master 16 tim saat menyimpan grup.
-    // Ini mencegah kegagalan save karena write tambahan yang tidak diperlukan.
-    const gv=await get(ref(db,'groups'));
-    if(!gv.exists()) throw new Error('Data Grup belum terbaca setelah disimpan.');
+
+    // Verifikasi dua sumber data benar-benar masuk Firebase.
+    const [tv,gv]=await Promise.all([get(ref(db,'teams')),get(ref(db,'groups'))]);
+    if(!tv.exists()) throw new Error('Data 16 Tim tidak terbaca setelah disimpan.');
+    if(!gv.exists()) throw new Error('Data Grup tidak terbaca setelah disimpan.');
+
+    teams=ensure16(tv.val());
     groups=normalizeGroups(gv.val());
     localStorage.setItem('ligakita_groups_draft',JSON.stringify(groups));
+    syncFlags();
+
+    // Jadwal selalu dibangun dari Grup yang baru tersimpan.
     matches=buildMatches(matches);
-    // Hanya simpan jadwal yang sudah punya pasangan; slot kosong tetap tersimpan sebagai jadwal terjadwal.
-    await update(ref(db,'matches'),matches);
+    await set(ref(db,'matches'),matches);
+
+    // Verifikasi jadwal juga.
+    const mv=await get(ref(db,'matches'));
+    if(!mv.exists()) throw new Error('Jadwal tidak terbaca setelah disimpan.');
+    matches=mv.val();
+
     renderAll();
-    setMsg('groupsMsg','✅ GRUP TERSIMPAN. Tim yang sudah dipilih tetap di grupnya dan otomatis hilang dari pilihan grup lain.');
+    setMsg('groupsMsg','✅ SEMUA TERSIMPAN: pilihan Grup + Main/Menang/Seri/Kalah/GM/GK/SG/Poin + jadwal.');
   }catch(e){
-    console.error(e);
-    setMsg('groupsMsg','❌ Gagal menyimpan grup: '+e.message,true);
-  }finally{b.disabled=false;}
+    console.error('saveGroups error:',e);
+    setMsg('groupsMsg','❌ Gagal menyimpan: '+(e?.message||e),true);
+  }finally{
+    b.disabled=false;
+  }
 }
 async function saveMatch(id){try{const old=matches[id]||{};const saved={...old,homeScore:$("h"+id).value===""?null:+$("h"+id).value,awayScore:$("a"+id).value===""?null:+$("a"+id).value,status:$("s"+id).value,date:$("d"+id).value,time:$("tm"+id).value};await set(ref(db,"matches/"+id),saved);matches[id]=saved;setMsg("matchesMsg",`✅ ${id} tersimpan.`)}catch(e){setMsg("matchesMsg","❌ Gagal menyimpan: "+e.message,true)}}
 async function calcStandings(){try{const stats={};for(let i=1;i<=16;i++)stats[`T${i}`]={main:0,win:0,draw:0,loss:0,gf:0,ga:0,gd:0,points:0};Object.values(matches).filter(m=>m.phase==="group"&&m.status==="finished"&&m.home&&m.away&&m.homeScore!=null&&m.awayScore!=null).forEach(m=>{const h=stats[m.home],a=stats[m.away];if(!h||!a)return;const hs=+m.homeScore,as=+m.awayScore;h.main++;a.main++;h.gf+=hs;h.ga+=as;a.gf+=as;a.ga+=hs;if(hs>as){h.win++;a.loss++;h.points+=3}else if(hs<as){a.win++;h.loss++;a.points+=3}else{h.draw++;a.draw++;h.points++;a.points++}h.gd=h.gf-h.ga;a.gd=a.gf-a.ga});const next=ensure16(teams);for(let i=1;i<=16;i++){const id=`T${i}`;next[id]={...next[id],...stats[id]}}await set(ref(db,"teams"),next);teams=next;renderTeams16();renderGroups();setMsg("groupsMsg","✅ Klasemen dihitung dan tersimpan.")}catch(e){setMsg("groupsMsg","❌ Gagal menghitung: "+e.message,true)}}
