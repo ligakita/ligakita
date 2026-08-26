@@ -33,14 +33,14 @@ header{padding:18px 24px;background:#11182b;position:sticky;top:0;z-index:5;bord
 <div class="note"><b>Alur:</b> Edit 16 tim → susun/edit Grup A–D → jadwal otomatis dari grup → masukkan hasil → hitung klasemen. Nama jadwal mengambil langsung dari Grup A–D.</div>
 
 <section class="card teams16">
-<div class="sectiontitle"><div><h2>1. Edit 16 Tim</h2><div class="help">Daftar 16 tim utama. Data ini disimpan terpisah sebagai daftar tim.</div></div><button id="saveTeams16" class="btn primary">💾 Simpan 16 Tim</button></div>
+<div class="sectiontitle"><div><h2>1. Edit 16 Tim</h2><div class="help">Edit nama 16 tim utama. Setelah disimpan, nama yang dipilih di Grup A–D otomatis dipakai pada jadwal pertandingan.</div></div><button id="saveTeams16" class="btn primary">💾 Simpan 16 Tim</button></div>
 <div class="tablewrap" style="margin-top:16px"><table><thead><tr><th>No</th><th>Nama Tim</th></tr></thead><tbody id="teams16Admin"></tbody></table></div>
 <div id="teams16Msg" class="msg"></div>
 </section>
 
-<section class="card"><div class="sectiontitle"><div><h2>2. Grup A, B, C, D</h2><div class="help">Setiap grup berisi 4 tim. Nama dan semua statistik dapat diedit.</div></div><div class="actions"><button id="calcStandings" class="btn secondary">🔄 Hitung dari Hasil</button><button id="saveGroups" class="btn primary">💾 Simpan Semua Grup</button></div></div><div id="groupsAdmin" class="groupgrid" style="margin-top:16px"></div><div id="groupsMsg" class="msg"></div></section>
+<section class="card"><div class="sectiontitle"><div><h2>2. Grup A, B, C, D</h2><div class="help">Setiap grup berisi 4 tim. Nama tim, Main, Menang, Seri, Kalah, GM, GK, SG, dan Poin dapat diedit.</div></div><div class="actions"><button id="calcStandings" class="btn secondary">🔄 Hitung dari Hasil</button><button id="saveGroups" class="btn primary">💾 Simpan Semua Grup</button></div></div><div id="groupsAdmin" class="groupgrid" style="margin-top:16px"></div><div id="groupsMsg" class="msg"></div></section>
 
-<section class="card"><div class="sectiontitle"><div><h2>3. Jadwal & Hasil Pertandingan</h2><div class="help">24 pertandingan dalam 3 putaran. Pertandingan 1–8 membuat semua 16 tim bermain 1 kali; 9–16 putaran kedua; 17–24 putaran ketiga. Nama otomatis dari Grup A–D.</div></div></div><div class="matchbox"><div id="adminMatches"></div></div><div id="matchesMsg" class="msg"></div></section>
+<section class="card"><div class="sectiontitle"><div><h2>3. Jadwal & Hasil Pertandingan</h2><div class="help">24 pertandingan: pertandingan 1–8 membuat semua 16 tim bermain 1 kali, 9–16 bermain untuk kedua kalinya, 17–24 untuk ketiga kalinya. Nama pertandingan otomatis dari Grup A–D sesuai jadwal Excel.</div></div></div><div class="matchbox"><div id="adminMatches"></div></div><div id="matchesMsg" class="msg"></div></section>
 </section></main>
 <script type="module" src="./admin.js"></script>
 </body></html>
