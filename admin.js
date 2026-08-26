@@ -159,36 +159,42 @@ async function saveGroups(){
   setMsg('groupsMsg','Menyimpan Grup...');
   try{
     const selected=readGroupDraftFromDOM();
-    const chosen=new Set();
     const clean={A:['','','',''],B:['','','',''],C:['','','',''],D:['','','','']};
+    const chosen=new Set();
     for(const g of GROUPS) for(let i=0;i<4;i++){
       const id=selected[g][i]||'';
-      if(!id) continue; // boleh simpan bertahap; slot kosong tidak dianggap error
+      if(!id) continue;
       if(!/^T([1-9]|1[0-6])$/.test(id)) throw new Error(`Pilihan Grup ${g} baris ${i+1} tidak valid.`);
       if(chosen.has(id)) throw new Error(`${teams[id]?.name||id} sudah dipilih di grup lain.`);
-      chosen.add(id);
-      clean[g][i]=id;
+      chosen.add(id); clean[g][i]=id;
     }
-    // Simpan struktur grup TERPISAH dari master 16 tim.
+    // Simpan HANYA struktur grup. Jangan menggagalkan penyimpanan karena update jadwal/statistik.
     await set(ref(db,'groups'),clean);
-    // Tandai grup pada master tanpa mengubah nama/statistik tim yang tidak dipilih.
-    const nextTeams=ensure16(teams);
-    for(let i=1;i<=16;i++) nextTeams[`T${i}`].group='';
-    for(const g of GROUPS) for(const id of clean[g]) if(id && nextTeams[id]) nextTeams[id].group=g;
-    await set(ref(db,'teams'),nextTeams);
-    const [gv,tv]=await Promise.all([get(ref(db,'groups')),get(ref(db,'teams'))]);
-    if(!gv.exists()) throw new Error('Data Grup belum terbaca setelah disimpan.');
-    groups=normalizeGroups(gv.val());
-    teams=ensure16(tv.val());
+    const verify=await get(ref(db,'groups'));
+    if(!verify.exists()) throw new Error('Firebase tidak mengembalikan data Grup setelah disimpan.');
+    groups=normalizeGroups(verify.val());
     localStorage.setItem('ligakita_groups_draft',JSON.stringify(groups));
-    matches=buildMatches(matches);
-    // Hanya simpan jadwal yang sudah punya pasangan; slot kosong tetap tersimpan sebagai jadwal terjadwal.
-    await update(ref(db,'matches'),matches);
+
+    // Perbarui penanda grup pada master 16 tim, tetapi kegagalan bagian ini tidak membatalkan groups.
+    try{
+      const nextTeams=ensure16(teams);
+      for(let i=1;i<=16;i++) nextTeams[`T${i}`].group='';
+      for(const g of GROUPS) for(const id of groups[g]) if(id && nextTeams[id]) nextTeams[id].group=g;
+      await set(ref(db,'teams'),nextTeams);
+      teams=nextTeams;
+    }catch(e){ console.warn('Penanda grup master gagal diperbarui:',e); }
+
+    // Jadwal diperbarui setelah grup tersimpan; kegagalan jadwal tidak membatalkan grup.
+    try{
+      matches=buildMatches(matches);
+      await set(ref(db,'matches'),matches);
+    }catch(e){ console.warn('Jadwal belum tersimpan:',e); }
+
     renderAll();
-    setMsg('groupsMsg','✅ GRUP TERSIMPAN. Tim yang sudah dipilih tetap di grupnya dan otomatis hilang dari pilihan grup lain.');
+    setMsg('groupsMsg','✅ GRUP TERSIMPAN. Pilihan Grup sudah tersimpan dan tidak di-reset.');
   }catch(e){
     console.error(e);
-    setMsg('groupsMsg','❌ Gagal menyimpan grup: '+e.message,true);
+    setMsg('groupsMsg','❌ Gagal menyimpan grup: '+(e?.message||e),true);
   }finally{b.disabled=false;}
 }
 async function saveMatch(id){try{const old=matches[id]||{};const saved={...old,homeScore:$("h"+id).value===""?null:+$("h"+id).value,awayScore:$("a"+id).value===""?null:+$("a"+id).value,status:$("s"+id).value,date:$("d"+id).value,time:$("tm"+id).value};await set(ref(db,"matches/"+id),saved);matches[id]=saved;setMsg("matchesMsg",`✅ ${id} tersimpan.`)}catch(e){setMsg("matchesMsg","❌ Gagal menyimpan: "+e.message,true)}}
