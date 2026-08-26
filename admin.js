@@ -1,27 +1,230 @@
-import { initializeApp } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
-import { getDatabase, ref, get, update, set } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
-import { getAuth, signInWithEmailAndPassword, onAuthStateChanged, signOut } from "https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
-import { firebaseConfig } from "./firebase-config.js";
+import{initializeApp}from"https://www.gstatic.com/firebasejs/12.1.0/firebase-app.js";
+import{getDatabase,ref,get,set,update,remove}from"https://www.gstatic.com/firebasejs/12.1.0/firebase-database.js";
+import{getAuth,signInWithEmailAndPassword,onAuthStateChanged,signOut}from"https://www.gstatic.com/firebasejs/12.1.0/firebase-auth.js";
+import{firebaseConfig}from"./firebase-config.js";
 
-const app=initializeApp(firebaseConfig),db=getDatabase(app),auth=getAuth(app),ADMIN_EMAIL="dendi170898@gmail.com";
-const $=id=>document.getElementById(id),esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[c]));
-const groups=['A','B','C','D'];
-const defaultNames=['ARCAK PUTRA','TIGER','FIT JUNIOR','SUKAMANAH UNITED','FAMILY','Tim 6','Tim 7','Tim 8','Tim 9','Tim 10','Tim 11','Tim 12','Tim 13','Tim 14','Tim 15','Tim 16'];
-const schedule=[['M1','A','T1','T2','2026-09-06','16:00'],['M2','A','T3','T4','2026-09-12','13:30'],['M3','B','T5','T6','2026-09-12','16:00'],['M4','B','T7','T8','2026-09-13','08:00'],['M5','C','T9','T10','2026-09-13','10:30'],['M6','C','T11','T12','2026-09-13','13:30'],['M7','D','T13','T14','2026-09-13','16:00'],['M8','D','T15','T16','2026-09-19','13:30'],['M9','A','T1','T3','2026-09-19','16:00'],['M10','A','T2','T4','2026-09-20','08:00'],['M11','B','T5','T7','2026-09-20','10:30'],['M12','B','T6','T8','2026-09-20','13:30'],['M13','C','T9','T11','2026-09-20','16:00'],['M14','C','T10','T12','2026-09-26','13:30'],['M15','D','T13','T15','2026-09-26','16:00'],['M16','D','T14','T16','2026-09-27','08:00'],['M17','A','T1','T4','2026-09-27','10:30'],['M18','A','T2','T3','2026-09-27','13:30'],['M19','B','T5','T8','2026-09-27','16:00'],['M20','B','T6','T7','2026-10-03','13:30'],['M21','C','T9','T12','2026-10-03','16:00'],['M22','C','T10','T11','2026-10-04','08:00'],['M23','D','T13','T16','2026-10-04','10:30'],['M24','D','T14','T15','2026-10-04','13:30']];
-const defaultTeams={};for(let i=1;i<=16;i++)defaultTeams['T'+i]={id:'T'+i,name:defaultNames[i-1],group:String.fromCharCode(65+Math.floor((i-1)/4))};
-const defaultMatches={};schedule.forEach(([id,group,home,away,date,time])=>defaultMatches[id]={id,group,home,away,date,time,homeScore:null,awayScore:null,status:'scheduled'});
-let teams={},standings={},matches={};
-function idFor(g,n){return 'T'+(groups.indexOf(g)*4+n)}
-function base(g){return [1,2,3,4].map(n=>{const id=idFor(g,n),t=teams[id]||defaultTeams[id],s=standings[g]?.[id]||{};return{id,name:t.name,played:s.played??0,wins:s.wins??0,draws:s.draws??0,losses:s.losses??0,gf:s.gf??0,ga:s.ga??0,gd:s.gd??0,pts:s.pts??0}})}
-function teamName(id){return teams[id]?.name||defaultTeams[id]?.name||id}
-function fmt(d,t){const x=new Date(d+'T00:00:00');return (isNaN(x)?d:x.toLocaleDateString('id-ID',{weekday:'long',day:'2-digit',month:'long',year:'numeric'}))+' • '+t+' WIB'}
-function hide(){$('loginBox').classList.remove('hidden');$('adminBox').classList.add('hidden')};function show(){$('loginBox').classList.add('hidden');$('adminBox').classList.remove('hidden');$('adminEmail').textContent=auth.currentUser?.email||''}
-async function load(){const [t,s,m]=await Promise.all([get(ref(db,'teams')),get(ref(db,'standings')),get(ref(db,'matches'))]);teams=t.exists()?t.val():{};standings=s.exists()?s.val():{};matches=m.exists()?m.val():{};if(!Object.keys(teams).length){await update(ref(db,'teams'),defaultTeams);teams={...defaultTeams}}if(!Object.keys(matches).length){await update(ref(db,'matches'),defaultMatches);matches={...defaultMatches}}render()}
-function renderGroups(){let html='';for(const g of groups){html+=`<div class="group"><h3>Grup ${g}</h3><div class="tablewrap"><table><thead><tr><th>No</th><th>Nama</th><th>Main</th><th>Menang</th><th>Seri</th><th>Kalah</th><th>GM</th><th>GK</th><th>SG</th><th>Poin</th></tr></thead><tbody>`;base(g).forEach((r,i)=>{html+=`<tr><td>${i+1}</td><td><input class="name" id="name_${r.id}" value="${esc(r.name)}"></td><td><input id="p_${r.id}" type="number" min="0" value="${r.played}"></td><td><input id="w_${r.id}" type="number" min="0" value="${r.wins}"></td><td><input id="d_${r.id}" type="number" min="0" value="${r.draws}"></td><td><input id="l_${r.id}" type="number" min="0" value="${r.losses}"></td><td><input id="gf_${r.id}" type="number" min="0" value="${r.gf}"></td><td><input id="ga_${r.id}" type="number" min="0" value="${r.ga}"></td><td><input id="gd_${r.id}" type="number" value="${r.gd}"></td><td><input id="pt_${r.id}" type="number" min="0" value="${r.pts}"></td></tr>`});html+='</tbody></table></div></div>'}$('groupsAdmin').innerHTML=html}
-function renderMatches(){let html='<div class="match" style="font-weight:700;color:#9aa6c1"><span>No</span><span>Pertandingan</span><span>Tanggal</span><span>Skor 1</span><span>Skor 2</span><span>Status</span><span>Aksi</span></div>';schedule.forEach(([id,g,h,a,date,time],i)=>{const m=matches[id]||defaultMatches[id];html+=`<div class="match"><span>${i+1}</span><div><b>Grup ${g}: ${esc(teamName(h))} VS ${esc(teamName(a))}</b><small>${id}</small></div><span>${esc(fmt(date,time))}</span><input id="h_${id}" type="number" min="0" value="${m.homeScore??''}" placeholder="0"><input id="a_${id}" type="number" min="0" value="${m.awayScore??''}" placeholder="0"><select id="s_${id}"><option value="scheduled" ${m.status==='scheduled'?'selected':''}>Terjadwal</option><option value="live" ${m.status==='live'?'selected':''}>LIVE</option><option value="finished" ${m.status==='finished'?'selected':''}>Selesai</option></select><button onclick="saveMatch('${id}')">Simpan</button></div>`});$('adminMatches').innerHTML=html}
-function render(){renderGroups();renderMatches()}
-$('loginBtn').onclick=async()=>{try{const c=await signInWithEmailAndPassword(auth,$('username').value.trim(),$('password').value);if(c.user.email!==ADMIN_EMAIL){await signOut(auth);$('loginMsg').textContent='Akun bukan admin.'}}catch(e){$('loginMsg').textContent='Login gagal: '+e.message}};$('logout').onclick=()=>signOut(auth);
-$('saveGroups').onclick=async()=>{const u={};for(const g of groups)for(let n=1;n<=4;n++){const id=idFor(g,n),name=$('name_'+id).value.trim()||('Tim '+id.slice(1));u['teams/'+id]={id,name,group:g};u['standings/'+g+'/'+id]={played:+$('p_'+id).value||0,wins:+$('w_'+id).value||0,draws:+$('d_'+id).value||0,losses:+$('l_'+id).value||0,gf:+$('gf_'+id).value||0,ga:+$('ga_'+id).value||0,gd:+$('gd_'+id).value||0,pts:+$('pt_'+id).value||0}}await update(ref(db),u);for(const g of groups)for(let n=1;n<=4;n++){const id=idFor(g,n);teams[id]=u['teams/'+id];standings[g]??={};standings[g][id]=u['standings/'+g+'/'+id]}render();$('groupsMsg').textContent='Grup A, B, C, D tersimpan. Nama grup otomatis dipakai di jadwal.';setTimeout(()=>$('groupsMsg').textContent='',3500)};
-$('calcStandings').onclick=()=>{const c={};for(const g of groups){c[g]={};base(g).forEach(r=>c[g][r.id]={...r,played:0,wins:0,draws:0,losses:0,gf:0,ga:0,gd:0,pts:0});schedule.filter(x=>x[1]===g).forEach(([id,gg,h,a])=>{const m=matches[id]||{};if(m.homeScore==null||m.awayScore==null)return;const H=c[g][h],A=c[g][a],hs=+m.homeScore,as=+m.awayScore;if(!H||!A)return;H.played++;A.played++;H.gf+=hs;H.ga+=as;A.gf+=as;A.ga+=hs;if(hs>as){H.wins++;H.pts+=3;A.losses++}else if(hs<as){A.wins++;A.pts+=3;H.losses++}else{H.draws++;A.draws++;H.pts++;A.pts++}});Object.values(c[g]).forEach(r=>r.gd=r.gf-r.ga)}standings=c;renderGroups();$('groupsMsg').textContent='Klasemen sudah dihitung dari hasil pertandingan. Klik Simpan Semua Grup untuk menyimpan.'};
-window.saveMatch=async id=>{const old=matches[id]||defaultMatches[id],h=$('h_'+id).value,a=$('a_'+id).value,s=$('s_'+id).value,v={...old,homeScore:h===''?null:+h,awayScore:a===''?null:+a,status:s};await set(ref(db,'matches/'+id),v);matches[id]=v;$('matchesMsg').textContent=id+' tersimpan. Klik Hitung dari Hasil untuk memperbarui klasemen.';setTimeout(()=>$('matchesMsg').textContent='',3000)};
-onAuthStateChanged(auth,async user=>{if(user&&user.email===ADMIN_EMAIL){show();await load()}else hide()});
+const app=initializeApp(firebaseConfig),db=getDatabase(app),auth=getAuth(app);
+const ADMIN_EMAIL="dendi170898@gmail.com";
+const $=id=>document.getElementById(id);
+const esc=s=>String(s??"").replace(/[&<>"']/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#039;"}[c]));
+let groups={},matches={},gallery={};
+
+const groupNames=["A","B","C","D"];
+const excelSchedule=[
+["M1","A",0,1,"2026-09-06","16:00"],["M2","A",2,3,"2026-09-13","10:30"],
+["M3","A",0,2,"2026-09-19","16:00"],["M4","A",1,3,"2026-09-20","16:00"],
+["M5","A",0,3,"2026-09-27","10:30"],["M6","A",1,2,"2026-10-03","16:00"],
+["M7","B",0,1,"2026-09-12","13:30"],["M8","B",2,3,"2026-09-13","13:30"],
+["M9","B",0,2,"2026-09-20","10:30"],["M10","B",1,3,"2026-09-26","13:30"],
+["M11","B",0,3,"2026-09-27","13:30"],["M12","B",1,2,"2026-10-04","08:00"],
+["M13","C",0,1,"2026-09-12","16:00"],["M14","C",2,3,"2026-09-13","16:00"],
+["M15","C",0,2,"2026-09-20","10:30"],["M16","C",1,3,"2026-09-26","16:00"],
+["M17","C",0,3,"2026-09-27","16:00"],["M18","C",1,2,"2026-10-04","10:30"],
+["M19","D",0,1,"2026-09-13","08:00"],["M20","D",2,3,"2026-09-19","13:30"],
+["M21","D",0,2,"2026-09-20","13:30"],["M22","D",1,3,"2026-09-27","08:00"],
+["M23","D",0,3,"2026-10-03","13:30"],["M24","D",1,2,"2026-10-04","13:30"]
+];
+
+const defaults={
+ A:["ARCAK PUTRA","TIGER","FIT JUNIOR","SUKAMANAH UNITED"],
+ B:["FAMILY","Tim 6","Tim 7","Tim 8"],
+ C:["Tim 9","Tim 10","Tim 11","Tim 12"],
+ D:["Tim 13","Tim 14","Tim 15","Tim 16"]
+};
+
+function emptyRow(name,id,group){
+ return{id,name,group,played:0,wins:0,draws:0,losses:0,gf:0,ga:0,gd:0,points:0};
+}
+function makeDefaults(){
+ const out={};
+ for(const g of groupNames){
+  out[g]={};
+  for(let i=0;i<4;i++){
+   const id=`${g}${i+1}`;
+   out[g][id]=emptyRow(defaults[g][i],id,g);
+  }
+ }
+ return out;
+}
+function normalizeGroups(raw){
+ const out=makeDefaults();
+ for(const g of groupNames){
+  const source=raw?.[g]||{};
+  const vals=Object.values(source);
+  for(let i=0;i<4;i++){
+   const d=Object.values(out[g])[i], v=source[d.id]||vals[i]||{};
+   out[g][d.id]={...d,...v,id:d.id,group:g,name:String(v.name??d.name)};
+   for(const k of ["played","wins","draws","losses","gf","ga","gd","points"])out[g][d.id][k]=Number(v[k]??d[k]??0);
+  }
+ }
+ return out;
+}
+function teamById(id){
+ for(const g of groupNames)if(groups[g]?.[id])return groups[g][id];
+ return null;
+}
+function teamName(id){
+ const t=teamById(id);
+ if(t)return t.name;
+ return({A1:"Juara Grup A",B1:"Juara Grup B",C1:"Juara Grup C",D1:"Juara Grup D",SF1W:"Pemenang SF1",SF2W:"Pemenang SF2"})[id]||id;
+}
+function defaultMatches(){
+ const out={};
+ for(const [id,g,h,a,date,time] of excelSchedule){
+  const home=`${g}${h+1}`,away=`${g}${a+1}`;
+  out[id]={id,phase:"group",group:g,home,away,date,time,homeScore:null,awayScore:null,status:"scheduled",location:""};
+ }
+ Object.assign(out,{
+  SF1:{id:"SF1",phase:"semifinal",home:"A1",away:"B1",date:"2026-10-04",time:"16:00",homeScore:null,awayScore:null,status:"scheduled",location:""},
+  SF2:{id:"SF2",phase:"semifinal",home:"C1",away:"D1",date:"2026-10-10",time:"13:30",homeScore:null,awayScore:null,status:"scheduled",location:""},
+  F:{id:"F",phase:"final",home:"SF1W",away:"SF2W",date:"2026-10-10",time:"16:00",homeScore:null,awayScore:null,status:"scheduled",location:""}
+ });
+ return out;
+}
+const fallbackMatches=defaultMatches();
+
+function hide(){$("loginBox").classList.remove("hidden");$("adminBox").classList.add("hidden")}
+function show(){$("loginBox").classList.add("hidden");$("adminBox").classList.remove("hidden");$("adminEmail").textContent=auth.currentUser?.email||ADMIN_EMAIL}
+
+async function loadData(){
+ try{
+  const [gs,ms,gals]=await Promise.all([get(ref(db,"groups")),get(ref(db,"matches")),get(ref(db,"gallery"))]);
+  groups=normalizeGroups(gs.exists()?gs.val():{});
+  matches=ms.exists()?ms.val():{};
+  gallery=gals.exists()?gals.val():{};
+  if(!gs.exists())await set(ref(db,"groups"),groups);
+  if(!ms.exists())await set(ref(db,"matches"),fallbackMatches);
+  if(!ms.exists())matches={...fallbackMatches};
+  await syncTeamsCompatibility(false);
+  render();
+ }catch(e){console.error(e);alert("Gagal membaca data Firebase: "+e.message)}
+}
+
+async function syncTeamsCompatibility(){
+ const teams={};
+ for(const g of groupNames)for(const id of Object.keys(groups[g]))teams[id]={id,name:groups[g][id].name,group:g};
+ await set(ref(db,"teams"),teams);
+}
+
+function render(){
+ renderGroups();
+ renderMatches();
+ if($("adminGallery"))renderGallery();
+}
+
+function renderGroups(){
+ $("groupsAdmin").innerHTML=groupNames.map(g=>{
+  const rows=Object.values(groups[g]);
+  return `<div class="group">
+   <h3>GRUP ${g}</h3>
+   <div class="tablewrap"><table>
+    <thead><tr><th>No</th><th class="name">Nama Tim</th><th>Main</th><th>Menang</th><th>Seri</th><th>Kalah</th><th>GM</th><th>GK</th><th>SG</th><th>Poin</th></tr></thead>
+    <tbody>${rows.map((t,i)=>`
+     <tr>
+      <td>${i+1}</td>
+      <td class="name"><input id="name-${t.id}" value="${esc(t.name)}" aria-label="Nama tim ${i+1} Grup ${g}"></td>
+      ${["played","wins","draws","losses","gf","ga","gd","points"].map(k=>`<td><input id="${k}-${t.id}" type="number" min="0" value="${Number(t[k]||0)}" aria-label="${k} ${t.name}"></td>`).join("")}
+     </tr>`).join("")}</tbody>
+   </table></div>
+  </div>`;
+ }).join("");
+}
+
+$("saveGroups").onclick=async()=>{
+ const btn=$("saveGroups");btn.disabled=true;btn.textContent="💾 Menyimpan...";
+ try{
+  const next=normalizeGroups(groups);
+  for(const g of groupNames){
+   for(const t of Object.values(next[g])){
+    t.name=$(`name-${t.id}`).value.trim()||t.name;
+    for(const k of ["played","wins","draws","losses","gf","ga","gd","points"]){
+     t[k]=Math.max(0,Number($(`${k}-${t.id}`).value||0));
+    }
+   }
+  }
+  groups=next;
+  await set(ref(db,"groups"),groups);
+  await syncTeamsCompatibility();
+  render();
+  $("groupsMsg").textContent="✓ Grup A, B, C, D berhasil disimpan. Nama grup otomatis dipakai di jadwal.";
+ }catch(e){$("groupsMsg").textContent="Gagal menyimpan: "+e.message}
+ finally{btn.disabled=false;btn.textContent="💾 Simpan Semua Grup"}
+};
+
+$("calcStandings").onclick=async()=>{
+ try{
+  const calc=calculateFromMatches();
+  for(const g of groupNames)for(const id of Object.keys(groups[g]))groups[g][id]={...groups[g][id],...calc[g][id]};
+  await set(ref(db,"groups"),groups);await syncTeamsCompatibility();render();
+  $("groupsMsg").textContent="✓ Main, Menang, Seri, Kalah, GM, GK, SG dan Poin dihitung dari hasil pertandingan.";
+ }catch(e){$("groupsMsg").textContent="Gagal menghitung: "+e.message}
+};
+
+function calculateFromMatches(){
+ const result=makeDefaults();
+ for(const g of groupNames)for(const id of Object.keys(result[g]))result[g][id].name=groups[g][id].name;
+ for(const [id,g,hidx,aidx] of excelSchedule){
+  const m=matches[id];if(!m)continue;
+  if(m.homeScore===null||m.homeScore===undefined||m.awayScore===null||m.awayScore===undefined||m.homeScore===""||m.awayScore==="")continue;
+  const h=`${g}${hidx+1}`,a=`${g}${aidx+1}`,hs=Number(m.homeScore),as=Number(m.awayScore);
+  const H=result[g][h],A=result[g][a];if(!H||!A)continue;
+  H.played++;A.played++;H.gf+=hs;H.ga+=as;A.gf+=as;A.ga+=hs;
+  if(hs>as){H.wins++;H.points+=3;A.losses++}
+  else if(hs<as){A.wins++;A.points+=3;H.losses++}
+  else{H.draws++;A.draws++;H.points++;A.points++}
+ }
+ for(const g of groupNames)for(const t of Object.values(result[g]))t.gd=t.gf-t.ga;
+ return result;
+}
+
+function formatSchedule(date,time){
+ if(!date&&!time)return"Belum dijadwalkan";
+ const d=date?new Date(date+"T00:00:00"):null;
+ const ds=d&&!isNaN(d)?d.toLocaleDateString("id-ID",{weekday:"long",day:"2-digit",month:"long",year:"numeric"}):date;
+ return[ds,time?time+" WIB":""].filter(Boolean).join(" • ");
+}
+
+function renderMatches(){
+ const list=excelSchedule.map(([id])=>matches[id]||fallbackMatches[id]);
+ $("adminMatches").innerHTML=list.map((m,i)=>`
+  <div class="match">
+   <div><b>${i+1}</b></div>
+   <div><b>${esc(teamName(m.home))}</b> <span class="muted">VS</span> <b>${esc(teamName(m.away))}</b><small>Grup ${esc(m.group)} • ${esc(formatSchedule(m.date,m.time))}</small></div>
+   <div><b>Hasil: ${m.homeScore??"-"} : ${m.awayScore??"-"}</b></div>
+   <select id="s-${m.id}"><option value="scheduled" ${m.status==="scheduled"?"selected":""}>Terjadwal</option><option value="live" ${m.status==="live"?"selected":""}>LIVE</option><option value="finished" ${m.status==="finished"?"selected":""}>Selesai</option></select>
+   <input id="h-${m.id}" type="number" min="0" placeholder="Skor 1" value="${m.homeScore??""}">
+   <input id="a-${m.id}" type="number" min="0" placeholder="Skor 2" value="${m.awayScore??""}">
+   <button type="button" onclick="saveScore('${m.id}')">Simpan</button>
+  </div>`).join("");
+}
+
+window.saveScore=async id=>{
+ const m=matches[id]||fallbackMatches[id];
+ const hs=$(`h-${id}`).value,as=$(`a-${id}`).value;
+ const saved={...m,homeScore:hs===""?null:Number(hs),awayScore:as===""?null:Number(as),status:$(`s-${id}`).value};
+ try{
+  await set(ref(db,"matches/"+id),saved);matches[id]=saved;renderMatches();
+  $("matchesMsg").textContent=`✓ Hasil ${id} tersimpan. Jika ingin memperbarui klasemen otomatis, klik "Hitung dari Hasil".`;
+ }catch(e){$("matchesMsg").textContent="Gagal menyimpan hasil: "+e.message}
+};
+
+function renderGallery(){
+ const el=$("adminGallery");if(!el)return;
+ const arr=Object.entries(gallery).sort((a,b)=>(b[1].createdAt||0)-(a[1].createdAt||0));
+ el.innerHTML=arr.length?arr.map(([id,x])=>`<figure class="gallery-item admin-gallery-item"><img src="${esc(x.url)}" alt="${esc(x.caption||"Foto")}"><figcaption>${esc(x.caption||"Liga Kita Vol-I")} <button class="danger" onclick="deletePhoto('${esc(id)}')">Hapus</button></figcaption></figure>`).join(""):"<p class='muted'>Belum ada foto.</p>";
+}
+window.deletePhoto=async id=>{if(!confirm("Hapus foto ini?"))return;await remove(ref(db,"gallery/"+id));await loadData()};
+
+onAuthStateChanged(auth,async user=>{
+ if(user&&user.email===ADMIN_EMAIL){show();await loadData()}else hide();
+});
+$("loginBtn").onclick=async()=>{
+ const email=$("username").value.trim(),pass=$("password").value;
+ $("loginMsg").textContent="Memproses login...";
+ if(!email||!pass){$("loginMsg").textContent="Isi email dan password.";return}
+ try{
+  const cred=await signInWithEmailAndPassword(auth,email,pass);
+  if(cred.user.email!==ADMIN_EMAIL){await signOut(auth);$("loginMsg").textContent="Akun ini bukan akun admin."}
+ }catch(e){$("loginMsg").textContent="Login gagal: "+(e.code||e.message)}
+};
+$("logout").onclick=()=>signOut(auth);
