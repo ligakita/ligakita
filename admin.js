@@ -41,18 +41,40 @@ function showLogin(){$("loginBox").classList.remove("hidden");$("adminBox").clas
 function showAdmin(){ $("loginBox").classList.add("hidden");$("adminBox").classList.remove("hidden");$("adminEmail").textContent=auth.currentUser?.email||"" }
 function syncFlags(){for(let i=1;i<=16;i++)teams[`T${i}`].group="";for(const g of GROUPS)for(const id of groups[g]||[])if(teams[id])teams[id].group=g}
 function renderTeams16(){const body=$("teams16Admin");if(!body)return;body.innerHTML=Array.from({length:16},(_,i)=>{const t=teams[`T${i+1}`]||defaultTeam(i+1);return `<tr><td>${i+1}</td><td><input id="team16_T${i+1}" value="${esc(t.name)}" placeholder="Nama Tim ${i+1}"></td></tr>`}).join("")}
+function getCurrentGroupSelections(){
+  const selected={A:["","","",""],B:["","","",""],C:["","","",""],D:["","","",""]};
+  for(const g of GROUPS) for(let i=0;i<4;i++){
+    const el=$(`gteam_${g}_${i}`);
+    selected[g][i]=el ? (el.value||"") : (groups[g]?.[i]||"");
+  }
+  return selected;
+}
 function refreshGroupSelectOptions(){
   const root=$('groupsAdmin');
   if(!root)return;
-  const current={};
-  root.querySelectorAll('select[data-group]').forEach(el=>{current[`${el.dataset.group}_${el.dataset.slot}`]=el.value||'';});
-  const selectedElsewhere=new Set(Object.values(current).filter(Boolean));
+  const selected=getCurrentGroupSelections();
+  // Simpan state terbaru sebelum menghitung opsi.
+  groups=normalizeGroups(selected);
+  const taken=new Set();
+  for(const g of GROUPS) for(let i=0;i<4;i++){
+    const id=selected[g][i];
+    if(id)taken.add(id);
+  }
   const options=Array.from({length:16},(_,i)=>teams[`T${i+1}`]||defaultTeam(i+1));
   root.querySelectorAll('select[data-group]').forEach(el=>{
-    const own=el.value||'';
-    el.innerHTML=`<option value="">— Pilih Tim —</option>`+options.filter(o=>o.id===own || !selectedElsewhere.has(o.id)).map(o=>`<option value="${o.id}" ${o.id===own?'selected':''}>${esc(o.name)}</option>`).join('');
+    const g=el.dataset.group, slot=Number(el.dataset.slot), own=selected[g][slot]||'';
+    // Tim yang sudah dipakai slot lain DIHILANGKAN dari dropdown ini.
+    const allowed=options.filter(o=>o.id===own || !taken.has(o.id));
+    el.innerHTML=`<option value="">— Pilih Tim —</option>`+
+      allowed.map(o=>`<option value="${o.id}" ${o.id===own?'selected':''}>${esc(o.name)}</option>`).join('');
     el.value=own;
   });
+}
+function persistGroupDraftFromDOM(){
+  const draft=getCurrentGroupSelections();
+  groups=normalizeGroups(draft);
+  localStorage.setItem('ligakita_groups_draft',JSON.stringify(groups));
+  return groups;
 }
 function renderGroups(){
   const root=$('groupsAdmin');
@@ -60,25 +82,28 @@ function renderGroups(){
   const options=Array.from({length:16},(_,i)=>teams[`T${i+1}`]||defaultTeam(i+1));
   root.innerHTML=GROUPS.map(g=>`<div class="group"><h3>Grup ${g}</h3><div class="tablewrap"><table><thead><tr><th>No</th><th class="name">Nama Tim</th><th>Main</th><th>Menang</th><th>Seri</th><th>Kalah</th><th>GM</th><th>GK</th><th>SG</th><th>Poin</th></tr></thead><tbody>${Array.from({length:4},(_,i)=>{
     const id=groups[g]?.[i] || "";
-    const t=teams[id]||defaultTeam(Number(String(id).slice(1)));
+    const t=teams[id]||defaultTeam(Number(String(id).slice(1))||i+1);
     const v=k=>Number.isFinite(+t[k])?+t[k]:0;
     return `<tr><td>${i+1}</td><td class="name"><select id="gteam_${g}_${i}" data-group="${g}" data-slot="${i}"><option value="">— Pilih Tim —</option>${options.map(o=>`<option value="${o.id}" ${o.id===id?'selected':''}>${esc(o.name)}</option>`).join('')}</select></td><td><input id="gm_${g}_${i}" type="number" min="0" value="${v('main')}"></td><td><input id="gw_${g}_${i}" type="number" min="0" value="${v('win')}"></td><td><input id="gdr_${g}_${i}" type="number" min="0" value="${v('draw')}"></td><td><input id="gl_${g}_${i}" type="number" min="0" value="${v('loss')}"></td><td><input id="gf_${g}_${i}" type="number" min="0" value="${v('gf')}"></td><td><input id="ga_${g}_${i}" type="number" min="0" value="${v('ga')}"></td><td><input id="gd_${g}_${i}" type="number" value="${v('gd')}"></td><td><input id="gp_${g}_${i}" type="number" min="0" value="${v('points')}"></td></tr>`;
   }).join('')}</tbody></table></div></div>`).join('');
 
   refreshGroupSelectOptions();
   root.querySelectorAll('select[data-group]').forEach(el=>el.addEventListener('change',()=>{
-    const draft=readGroupDraftFromDOM();
+    const before=groups;
+    const draft=getCurrentGroupSelections();
     const counts={};
     for(const g of GROUPS) for(const tid of draft[g]) if(tid) counts[tid]=(counts[tid]||0)+1;
-    if(counts[el.value]>1){
+    if(el.value && counts[el.value]>1){
       setMsg('groupsMsg','❌ Tim yang sama tidak boleh dipilih dua kali.',true);
-      el.value=groups[el.dataset.group]?.[+el.dataset.slot] || "";
+      const g=el.dataset.group,slot=Number(el.dataset.slot);
+      el.value=before[g]?.[slot]||'';
       refreshGroupSelectOptions();
       return;
     }
-    setGroupDraft(draft);
+    groups=normalizeGroups(draft);
+    localStorage.setItem('ligakita_groups_draft',JSON.stringify(groups));
     refreshGroupSelectOptions();
-    setMsg('groupsMsg','✏️ Tim yang sudah dipilih otomatis dihapus dari pilihan grup lain. Klik Simpan Semua Grup.');
+    setMsg('groupsMsg','✏️ Tim yang sudah dipilih DIHILANGKAN dari pilihan grup lain.');
   }));
 }
 function renderMatches(){const root=$("adminMatches");if(!root)return;const list=Object.values(matches).filter(m=>m.phase==="group").sort((a,b)=>(+a.id.slice(1))-(+b.id.slice(1)));const name=id=>teams[id]?.name||"-";root.innerHTML=list.map((m,i)=>`<div class="match"><div><b>${i+1}</b><small>Putaran ${m.round}</small></div><div><b>Grup ${esc(m.group)}</b></div><div><b>${esc(name(m.home))}</b></div><div>VS</div><div><b>${esc(name(m.away))}</b></div><input id="h${m.id}" type="number" min="0" placeholder="Skor" value="${m.homeScore??""}"><input id="a${m.id}" type="number" min="0" placeholder="Skor" value="${m.awayScore??""}"><input id="d${m.id}" type="date" value="${esc(m.date||"")}"><input id="tm${m.id}" type="time" value="${esc(m.time||"")}"><select id="s${m.id}"><option value="scheduled" ${m.status!=="finished"?"selected":""}>Terjadwal</option><option value="finished" ${m.status==="finished"?"selected":""}>Selesai</option></select><button type="button" data-match="${m.id}">Simpan</button></div>`).join("");root.querySelectorAll("[data-match]").forEach(b=>b.addEventListener("click",()=>saveMatch(b.dataset.match)))}
