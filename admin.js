@@ -77,8 +77,8 @@ $("saveGroups").onclick=async()=>{
  try{
   const selected=[];const updates={};
   for(const g of GROUPS)for(let i=0;i<4;i++){
-   const id=$("gteam_${g}_${i}").value;if(!id)throw new Error(`Grup ${g} baris ${i+1} belum memilih tim.`);if(selected.includes(id))throw new Error(`Tim ${teams[id]?.name||id} dipilih lebih dari satu kali.`);selected.push(id);
-   const old=teams[id]||defaultTeams[id];const v={...old,id,group:g,name:old.name,main:+$("gm_${g}_${i}").value||0,win:+$("gw_${g}_${i}").value||0,draw:+$("gd_${g}_${i}").value||0,loss:+$("gl_${g}_${i}").value||0,gf:+$("gf_${g}_${i}").value||0,ga:+$("ga_${g}_${i}").value||0,gd:+$("gg_${g}_${i}").value||0,points:+$("gp_${g}_${i}").value||0};updates[id]=v;
+   const id=$("gteam_"+g+"_"+i).value;if(!id)throw new Error(`Grup ${g} baris ${i+1} belum memilih tim.`);if(selected.includes(id))throw new Error(`Tim ${teams[id]?.name||id} dipilih lebih dari satu kali.`);selected.push(id);
+   const old=teams[id]||defaultTeams[id];const v={...old,id,group:g,name:old.name,main:+$("gm_"+g+"_"+i).value||0,win:+$("gw_"+g+"_"+i).value||0,draw:+$("gd_"+g+"_"+i).value||0,loss:+$("gl_"+g+"_"+i).value||0,gf:+$("gf_"+g+"_"+i).value||0,ga:+$("ga_"+g+"_"+i).value||0,gd:+$("gg_"+g+"_"+i).value||0,points:+$("gp_"+g+"_"+i).value||0};updates[id]=v;
   }
   await update(ref(db,"teams"),updates);teams={...teams,...updates};
   const mm=makeDefaultMatches();for(const id of Object.keys(mm)){const old=matches[id]||{};mm[id]={...mm[id],...old,home:teamId(mm[id].group, schedule[Number(id.slice(1))-1][4]),away:teamId(mm[id].group,schedule[Number(id.slice(1))-1][5])};}
