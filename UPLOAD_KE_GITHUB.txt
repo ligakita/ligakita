@@ -1,10 +1,25 @@
-PAKET LIGAKITA LENGKAP
+LIGA KITA VOL-I — PAKET GITHUB PAGES
 
-1. Buka repository https://github.com/ligakita/ligakita
-2. Upload semua file dalam paket ini ke root repository. Jika GitHub bertanya replace file, pilih replace.
-3. Commit changes.
-4. Tunggu 1-3 menit.
-5. Buka https://ligakita.github.io/ligakita/admin.html
+Upload SEMUA file di folder ini ke repository:
+ligakita.github.io
 
-Admin sekarang: edit nama tim Grup A-D, jadwal 24 pertandingan mengikuti Excel, dan input skor.
-Jangan hapus firebase-config.js.
+File utama:
+- index.html
+- style.css
+- app.js
+- firebase-config.js
+- logo-liga-kita.jpg
+- admin.html
+- admin.js
+
+Jangan hanya upload index.html, karena website membutuhkan CSS, JavaScript,
+logo, dan konfigurasi Firebase.
+
+Setelah semua file di-upload:
+Settings -> Pages -> Deploy from a branch -> main -> / (root) -> Save
+
+Alamat target:
+https://ligakita.github.io
+
+Website ini memakai Firebase yang sama seperti versi Liga Kita sebelumnya,
+sehingga struktur publik + admin tetap dipertahankan.
