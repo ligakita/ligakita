@@ -15,3 +15,5 @@ const ml=$("matches");if(ml)ml.innerHTML=schedule.map(([id,g,a,b,date,time],i)=>
 const n=schedule.find(([id])=>{const m=matches[id]||{};return m.status!=="finished"});if($("nextMatch")&&n)$("nextMatch").innerHTML=`<div class="next-card"><strong>${esc(tn(groups[n[1]][n[2]]))} <span class="vs">VS</span> ${esc(tn(groups[n[1]][n[3]]))}</strong><small>${n[4]} • ${n[5]} WIB • Grup ${n[1]}</small></div>`}
 async function load(){const [a,b,c,d]=await Promise.all([get(ref(db,"teams16")),get(ref(db,"groups")),get(ref(db,"matches")),get(ref(db,"stats"))]);const tv=a.exists()?a.val():{};teams={};for(let i=1;i<=16;i++)teams["T"+i]={name:tv["T"+i]?.name||tv["T"+i]||"Tim "+i};if(c.exists())matches=c.val();if(b.exists())groups=norm(b.val());stats=d.exists()?d.val():{};render()}
 load();onValue(ref(db,"teams16"),load);onValue(ref(db,"groups"),load);onValue(ref(db,"matches"),load);onValue(ref(db,"stats"),load);
+
+/* Public standings are stacked vertically for easy screenshots */

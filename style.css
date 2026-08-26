@@ -11,3 +11,31 @@
 /* FORCE GROUPS A-D VERTICAL */
 .group-grid{display:flex!important;flex-direction:column!important;gap:18px!important;width:100%!important}
 .group-grid>.group-card{width:100%!important;grid-column:auto!important}
+
+/* FINAL GROUP LAYOUT */
+.group-grid{display:flex!important;flex-direction:column!important;gap:18px!important;width:100%!important}
+.group-card{width:100%!important;overflow-x:auto!important}
+.group-card table{width:100%!important;table-layout:fixed!important;min-width:0!important}
+.group-card th:nth-child(1),.group-card td:nth-child(1){width:45px!important}
+.group-card th:nth-child(2),.group-card td:nth-child(2){width:380px!important;text-align:left!important}
+.group-card th:nth-child(n+3),.group-card td:nth-child(n+3){width:78px!important}
+.group-card input,.group-card select{width:100%!important;min-width:0!important}
+@media(max-width:800px){.group-card th:nth-child(2),.group-card td:nth-child(2){width:300px!important}.group-card th:nth-child(n+3),.group-card td:nth-child(n+3){width:64px!important}}
+/* PUBLIC: Grup A-D turun ke bawah */
+.standings-grid{display:flex!important;flex-direction:column!important;gap:18px!important;width:100%!important}
+.standings-grid .card{width:100%!important;margin:0!important}
+.standings-grid table{width:100%!important;table-layout:fixed!important}
+.standings-grid th:first-child,.standings-grid td:first-child{width:55px!important}
+.standings-grid th:nth-child(2),.standings-grid td:nth-child(2){width:38%!important}
+.standings-grid th:nth-child(n+3),.standings-grid td:nth-child(n+3){width:auto!important;text-align:center!important}
+@media(max-width:600px){.standings-grid th:nth-child(2),.standings-grid td:nth-child(2){width:42%!important}.standings-grid th,.standings-grid td{padding:7px 5px;font-size:12px}}
+
+/* EXTRA WIDE TEAM NAME */
+.group-grid{grid-template-columns:1fr!important}
+.group-card table{min-width:900px!important}
+.group-card .team-select{min-width:520px!important;width:520px!important}
+.group-card th:not(:first-child),.group-card td:not(:first-child){width:48px!important;min-width:48px!important;padding-left:4px!important;padding-right:4px!important}
+#tables{grid-template-columns:1fr!important}
+#tables .card{width:100%!important;overflow-x:auto}
+#tables table th:first-child,#tables table td:first-child{min-width:520px!important;width:520px!important;white-space:nowrap}
+@media(max-width:600px){.group-card .team-select{min-width:380px!important;width:380px!important}#tables table th:first-child,#tables table td:first-child{min-width:380px!important;width:380px!important}}
