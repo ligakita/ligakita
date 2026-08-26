@@ -112,12 +112,22 @@ $("saveGroups").onclick=async()=>{
   syncGroupsFromInputs();readStats();
   const all=Object.values(groups).flat().filter(Boolean),unique=new Set(all);
   if(all.length!==unique.size)throw Error("Ada tim yang dipilih lebih dari satu grup.");
-  const updates={};
-  for(const g of GROUPS)groups[g].forEach((id,i)=>updates[`groups/${g}/${i}`]=id||null);
-  for(const [id,st] of Object.entries(stats))updates[`stats/${id}`]=st;
-  await update(ref(db),updates);
+  // Simpan URUTAN pilihan persis seperti yang tampil di Grup A-D.
+  // Jangan membangun ulang berdasarkan nomor Tim.
+  const cleanGroups={};
+  for(const g of GROUPS) cleanGroups[g]=groups[g].slice(0,4).map(id=>id||null);
+  await set(ref(db,"groups"),cleanGroups);
+  const statPayload={};
+  for(const [id,st] of Object.entries(stats)) statPayload[id]=st;
+  await set(ref(db,"stats"),statPayload);
+  // Penanda versi membantu Web Publik mengambil konfigurasi grup terbaru.
+  await update(ref(db),{groupConfigVersion:Date.now()});
   const verify=await get(ref(db,"groups"));
   if(!verify.exists())throw Error("Firebase tidak mengembalikan data Grup setelah disimpan.");
+  const saved=groupStateFromFirebase(verify.val());
+  const same=GROUPS.every(g=>saved[g].join("|")===groups[g].map(x=>x||"").join("|"));
+  if(!same)throw Error("Urutan Grup yang tersimpan berbeda dari pilihan Admin.");
+  groups=saved;
   $("groupsMsg").innerHTML="<span class='ok'>✅ Grup tersimpan. Pilihan tidak di-reset.</span>";
   renderGroups();renderMatches();
  }catch(e){$("groupsMsg").innerHTML=`<span class='err'>❌ Gagal menyimpan Grup: ${esc(e.message)}</span>`}

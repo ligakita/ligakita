@@ -26,6 +26,11 @@ function render(){
 async function load(){
  const [ts,gs,ss,ms]=await Promise.all([get(ref(db,"teams16")),get(ref(db,"groups")),get(ref(db,"stats")),get(ref(db,"matches"))]);
  const tv=ts.exists()?ts.val():{};teams={};for(let i=1;i<=16;i++){const id="T"+i;teams[id]={name:tv[id]?.name||tv[id]||DEFAULT[i-1]}}
- if(gs.exists())groups=normalize(gs.val());stats=ss.exists()?ss.val():{};matches=ms.exists()?ms.val():{};render()
+ if(gs.exists()){
+   const saved=normalize(gs.val());
+   // Firebase adalah sumber utama. Jangan pernah menyusun ulang menjadi T1-T4/T5-T8 dst.
+   groups=saved;
+  }
+  stats=ss.exists()?ss.val():{};matches=ms.exists()?ms.val():{};render()
 }
 load();onValue(ref(db,"teams16"),load);onValue(ref(db,"groups"),load);onValue(ref(db,"matches"),load);
