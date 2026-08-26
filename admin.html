@@ -1,46 +1,14 @@
 <!doctype html>
-<html lang="id">
-<head>
-<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Admin Liga Kita</title>
+<html lang="id"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Admin Liga Kita</title>
 <style>
-*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0b1020;color:#eef2ff}
-header{padding:18px 24px;background:#11182b;position:sticky;top:0;z-index:5;border-bottom:1px solid #26314d}
-.wrap{max-width:1500px;margin:auto;padding:22px}h1,h2,h3{margin:0 0 10px}.card{background:#11182b;border:1px solid #26314d;border-radius:14px;padding:18px;margin-bottom:18px}
-.muted{color:#9aa6c1}.hidden{display:none!important}.login{max-width:430px;margin:90px auto}
-.login input,.group input,.match input,.match select,.teams16 input{width:100%;padding:9px;border-radius:7px;border:1px solid #35415e;background:#0a1120;color:#fff}
-.login input{margin:8px 0}.btn{border:0;border-radius:8px;padding:10px 14px;cursor:pointer;font-weight:700}.primary{background:#22c55e;color:#06130a}.secondary{background:#334155;color:#fff}
-.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px}.right,.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
-.note{background:#17213a;border-left:4px solid #38bdf8;padding:13px;border-radius:8px;margin-bottom:16px}.groupgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}
-.group{border:1px solid #33405e;border-radius:12px;overflow:hidden;background:#0e1527}.group h3{padding:12px 14px;background:#18213a}.tablewrap{overflow:auto}
-.group table,.teams16 table{width:100%;border-collapse:collapse}.group table{min-width:780px}.group th,.group td,.teams16 th,.teams16 td{padding:7px;border-bottom:1px solid #27334e;text-align:center}
-.group th,.teams16 th{font-size:12px;color:#aeb9d2;background:#121c32}.group .name{min-width:180px;text-align:left}.msg{margin-top:10px;color:#86efac}
-.matchbox{overflow:auto}.match{display:grid;grid-template-columns:55px minmax(300px,1fr) 200px 80px 80px 100px 90px;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid #26314d;min-width:900px}
-.match small{display:block;color:#94a3b8;margin-top:3px}.match button{background:#2563eb;color:#fff;border:0;border-radius:7px;padding:9px;cursor:pointer}
-.sectiontitle{display:flex;justify-content:space-between;align-items:center;gap:12px}.help{font-size:13px;color:#aeb9d2}
-.teams16 table{max-width:850px}.teams16 th:first-child,.teams16 td:first-child{width:70px}
-@media(max-width:900px){.groupgrid{grid-template-columns:1fr}.wrap{padding:12px}}
-</style>
-</head>
-<body>
-<header><div class="wrap topbar">
-<div><h1>⚽ Liga Kita — ADMIN</h1><div class="muted">Kelola 16 tim, grup, jadwal, dan hasil pertandingan.</div></div>
-<div class="right"><a href="https://ligakita.github.io/ligakita/" class="btn secondary" style="text-decoration:none">← Kembali ke Website Liga Kita</a><span id="adminEmail" class="muted"></span><button id="logout" class="btn secondary">Keluar</button></div>
-</div></header>
+*{box-sizing:border-box}body{margin:0;font-family:Arial,sans-serif;background:#0b1020;color:#eef2ff}header{padding:18px 24px;background:#11182b;position:sticky;top:0;z-index:5;border-bottom:1px solid #26314d}.wrap{max-width:1500px;margin:auto;padding:22px}h1,h2,h3{margin:0 0 10px}.card{background:#11182b;border:1px solid #26314d;border-radius:14px;padding:18px;margin-bottom:18px}.muted{color:#9aa6c1}.hidden{display:none!important}.login{max-width:430px;margin:90px auto}.login input,.group input,.match input,.match select,.teams16 input,.group select{width:100%;padding:9px;border-radius:7px;border:1px solid #35415e;background:#0a1120;color:#fff}.login input{margin:8px 0}.btn{border:0;border-radius:8px;padding:10px 14px;cursor:pointer;font-weight:700}.btn:disabled{opacity:.55;cursor:not-allowed}.primary{background:#22c55e;color:#06130a}.secondary{background:#334155;color:#fff}.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px}.right,.actions{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.note{background:#17213a;border-left:4px solid #38bdf8;padding:13px;border-radius:8px;margin-bottom:16px}.groupgrid{display:grid;grid-template-columns:repeat(2,1fr);gap:16px}.group{border:1px solid #33405e;border-radius:12px;overflow:hidden;background:#0e1527}.group h3{padding:12px 14px;background:#18213a}.tablewrap{overflow:auto}.group table,.teams16 table{width:100%;border-collapse:collapse}.group table{min-width:780px}.group th,.group td,.teams16 th,.teams16 td{padding:7px;border-bottom:1px solid #27334e;text-align:center}.group th,.teams16 th{font-size:12px;color:#aeb9d2;background:#121c32}.group .name{min-width:180px;text-align:left}.msg{margin-top:10px;color:#86efac;min-height:20px}.err{color:#fca5a5}.matchbox{overflow:auto}.match{display:grid;grid-template-columns:55px 110px minmax(180px,1fr) 35px minmax(180px,1fr) 80px 80px 130px 100px 110px 80px;gap:8px;align-items:center;padding:10px 0;border-bottom:1px solid #26314d;min-width:1150px}.match small{display:block;color:#94a3b8;margin-top:3px}.match button{background:#2563eb;color:#fff;border:0;border-radius:7px;padding:9px;cursor:pointer}.sectiontitle{display:flex;justify-content:space-between;align-items:center;gap:12px}.help{font-size:13px;color:#aeb9d2}.teams16 table{max-width:850px}.teams16 th:first-child,.teams16 td:first-child{width:70px}.saveok{color:#86efac}.saveerr{color:#fca5a5}@media(max-width:900px){.groupgrid{grid-template-columns:1fr}.wrap{padding:12px}}
+</style></head>
+<body><header><div class="wrap topbar"><div><h1>⚽ Liga Kita — ADMIN</h1><div class="muted">16 Tim → Grup A–D → Jadwal & Hasil</div></div><div class="right"><a href="https://ligakita.github.io/ligakita/" class="btn secondary" style="text-decoration:none">← Kembali ke Website</a><span id="adminEmail" class="muted"></span><button id="logout" type="button" class="btn secondary">Keluar</button></div></div></header>
 <main class="wrap">
-<section id="loginBox" class="card login"><h2>Login Admin</h2><input id="username" type="email" placeholder="Email admin"><input id="password" type="password" placeholder="Password"><button id="loginBtn" class="btn primary">Login</button><div id="loginMsg" class="msg"></div></section>
+<section id="loginBox" class="card login"><h2>Login Admin</h2><input id="username" type="email" placeholder="Email admin"><input id="password" type="password" placeholder="Password"><button id="loginBtn" type="button" class="btn primary">Login</button><div id="loginMsg" class="msg"></div></section>
 <section id="adminBox" class="hidden">
-<div class="note"><b>Alur:</b> Edit 16 tim → susun/edit Grup A–D → jadwal otomatis dari grup → masukkan hasil → hitung klasemen. Nama jadwal mengambil langsung dari Grup A–D.</div>
-
-<section class="card teams16">
-<div class="sectiontitle"><div><h2>1. Edit 16 Tim</h2><div class="help">Edit nama 16 tim utama. <b>Grup A–D mengambil tim dari daftar 16 tim ini.</b> Setelah nama disimpan, nama tersebut otomatis dipakai di grup dan jadwal.</div></div><button id="saveTeams16" class="btn primary">💾 Simpan 16 Tim</button></div>
-<div class="tablewrap" style="margin-top:16px"><table><thead><tr><th>No</th><th>Nama Tim</th></tr></thead><tbody id="teams16Admin"></tbody></table></div>
-<div id="teams16Msg" class="msg"></div>
-</section>
-
-<section class="card"><div class="sectiontitle"><div><h2>2. Grup A, B, C, D</h2><div class="help">Setiap grup berisi 4 tim yang dipilih dari <b>16 Tim</b>. Semua kolom Nama Tim, Main, Menang, Seri, Kalah, GM, GK, SG, dan Poin dapat diedit.</div></div><div class="actions"><button id="calcStandings" class="btn secondary">🔄 Hitung dari Hasil</button><button id="saveGroups" class="btn primary">💾 Simpan Semua Grup</button></div></div><div id="groupsAdmin" class="groupgrid" style="margin-top:16px"></div><div id="groupsMsg" class="msg"></div></section>
-
-<section class="card"><div class="sectiontitle"><div><h2>3. Jadwal & Hasil Pertandingan</h2><div class="help">24 pertandingan: pertandingan 1–8 membuat semua 16 tim bermain 1 kali, 9–16 bermain untuk kedua kalinya, 17–24 untuk ketiga kalinya. Nama pertandingan otomatis mengambil tim yang sudah dipilih dari Grup A–D.</div></div></div><div class="matchbox"><div id="adminMatches"></div></div><div id="matchesMsg" class="msg"></div></section>
-</section></main>
-<script type="module" src="./admin.js?v=20260827-0455"></script>
-</body></html>
+<div class="note"><b>Urutan:</b> Edit 16 Tim → <b>Simpan 16 Tim</b> → pilih Tim 1–16 ke Grup A–D → simpan grup → jadwal mengikuti grup. <b>Nama tim di grup bukan data baru; grup hanya memilih dari 16 Tim Master.</b></div>
+<section class="card teams16"><div class="sectiontitle"><div><h2>1. Edit 16 Tim</h2><div class="help">Tim 1–16 adalah MASTER. Nama yang disimpan di sini otomatis dipakai di Grup dan Jadwal.</div></div><button id="saveTeams16" type="button" class="btn primary">💾 Simpan 16 Tim</button></div><div class="tablewrap" style="margin-top:16px"><table><thead><tr><th>No</th><th>Nama Tim</th></tr></thead><tbody id="teams16Admin"></tbody></table></div><div id="teams16Msg" class="msg"></div></section>
+<section class="card"><div class="sectiontitle"><div><h2>2. Grup A, B, C, D</h2><div class="help">Setiap grup memilih tepat 4 tim dari 16 Tim Master. Semua 16 tim harus dipakai tepat satu kali.</div></div><div class="actions"><button id="calcStandings" type="button" class="btn secondary">🔄 Hitung dari Hasil</button><button id="saveGroups" type="button" class="btn primary">💾 Simpan Semua Grup</button></div></div><div id="groupsAdmin" class="groupgrid" style="margin-top:16px"></div><div id="groupsMsg" class="msg"></div></section>
+<section class="card"><div class="sectiontitle"><div><h2>3. Jadwal & Hasil Pertandingan</h2><div class="help">24 pertandingan: 8 pertama untuk putaran 1, 8 berikutnya putaran 2, 8 terakhir putaran 3. Nama diambil dari Grup.</div></div></div><div class="matchbox"><div id="adminMatches"></div></div><div id="matchesMsg" class="msg"></div></section>
+</section></main><script type="module" src="./admin.js?v=20260827-savefix-1"></script></body></html>
