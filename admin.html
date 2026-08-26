@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Admin Liga Kita</title>
-<link rel="stylesheet" href="style.css?v=20260827-vertical-2">
+<link rel="stylesheet" href="style.css?v=20260827-final-wide-team-4">
 <style>
 .group-grid{display:flex!important;flex-direction:column!important;gap:18px!important;width:100%!important}.group-card{width:100%!important}
 .group-card{background:#07111f;border:1px solid #263a55;border-radius:12px;padding:14px;overflow-x:auto;width:100%}
@@ -14,6 +14,16 @@
 .master-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.master-grid label{color:#9fb0c9}
 .savebar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.ok{color:#86efac}.err{color:#fca5a5}
 @media(max-width:800px){.master-grid{grid-template-columns:1fr}}
+
+/* FINAL: team name extra wide, numeric columns compact */
+.group-grid{display:flex!important;flex-direction:column!important;gap:20px!important;width:100%!important}
+.group-card{width:100%!important;overflow-x:auto!important}
+.group-card table{width:100%!important;min-width:1150px!important;table-layout:fixed!important}
+.group-card th:nth-child(1),.group-card td:nth-child(1){width:55px!important;min-width:55px!important}
+.group-card th:nth-child(2),.group-card td:nth-child(2){width:700px!important;min-width:700px!important;text-align:left!important;white-space:nowrap!important}
+.group-card th:nth-child(n+3),.group-card td:nth-child(n+3){width:55px!important;min-width:55px!important;padding-left:5px!important;padding-right:5px!important}
+.group-card .team-select{width:700px!important;min-width:700px!important;max-width:none!important}
+@media(max-width:700px){.group-card th:nth-child(2),.group-card td:nth-child(2){width:520px!important;min-width:520px!important}.group-card .team-select{width:520px!important;min-width:520px!important}}
 </style>
 </head>
 <body>
@@ -41,5 +51,5 @@
 <section class="panel"><h2>4. Keluar / Web Publik</h2><button id="logout" class="secondary" type="button">Keluar</button></section>
 </section>
 </main>
-<script type="module" src="admin.js?v=stats-team-1"></script>
+<script type="module" src="admin.js?v=stats-team-final-wide-4"></script>
 </body></html>
