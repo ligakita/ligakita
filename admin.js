@@ -39,6 +39,7 @@ async function load(){
  }catch(e){show($("groupsMsg"),"❌ Gagal membaca Firebase: "+e.message,true)}
 }
 function show(el,msg,error=false){if(el){el.textContent=msg;el.className=error?"err":"ok"}}
+function withTimeout(promise,ms=12000){return Promise.race([promise,new Promise((_,reject)=>setTimeout(()=>reject(Error("Firebase tidak merespons dalam 12 detik. Cek koneksi internet atau Firebase Rules.")),ms))])}
 function teamName(x){return teams[x]?.name||x||"Belum dipilih"}
 function renderTeams(){
  $("teamsForm").innerHTML=Array.from({length:16},(_,i)=>`<label>Tim ${i+1}<input id="name_T${i+1}" value="${esc(teamName("T"+(i+1)))}"></label>`).join("");
@@ -71,10 +72,10 @@ $("saveTeams").onclick=async()=>{
  const b=$("saveTeams");b.disabled=true;syncNamesFromInputs();show($("teamsMsg"),"Menyimpan 16 tim...");
  try{
   const u={};for(let i=1;i<=16;i++){const tid="T"+i;u["teams16/"+tid]={id:tid,name:teams[tid].name};u["teams/"+tid]={id:tid,name:teams[tid].name}}
-  await update(ref(db),u);const v=await get(ref(db,"teams16"));if(!v.exists())throw Error("Verifikasi Firebase gagal.");
+  await withTimeout(update(ref(db),u));const v=await withTimeout(get(ref(db,"teams16")));if(!v.exists())throw Error("Verifikasi Firebase gagal.");
   show($("teamsMsg"),"✅ 16 Tim tersimpan.");
   renderGroups();renderMatches();
- }catch(e){show($("teamsMsg"),"❌ SAVE GAGAL: "+e.message,true)}finally{b.disabled=false}
+ }catch(e){console.error("SAVE TEAMS",e);show($("teamsMsg"),"❌ SAVE GAGAL: "+e.message,true)}finally{b.disabled=false}
 };
 $("saveGroups").onclick=async()=>{
  const b=$("saveGroups");b.disabled=true;readGroupsAndStats();show($("groupsMsg"),"Menyimpan...");
@@ -89,11 +90,11 @@ $("saveGroups").onclick=async()=>{
   const [gv,mv]=await Promise.all([get(ref(db,"groups")),get(ref(db,"matches"))]);if(!gv.exists()||!mv.exists())throw Error("Verifikasi setelah Save gagal.");
   groups=normalizeGroups(gv.val());matches=mv.val();show($("groupsMsg"),"✅ SEMUA TERSIMPAN: Grup + klasemen + jadwal.");
   renderAll();
- }catch(e){show($("groupsMsg"),"❌ SAVE GAGAL: "+e.message,true)}finally{b.disabled=false}
+ }catch(e){console.error("SAVE GROUPS",e);show($("groupsMsg"),"❌ SAVE GAGAL: "+e.message,true)}finally{b.disabled=false}
 };
 window.saveMatch=async mid=>{
  const old=matches[mid]||{};const h=$("h_"+mid),a=$("a_"+mid),s=$("s_"+mid);
- try{const saved={...old,homeScore:h.value===""?null:Number(h.value),awayScore:a.value===""?null:Number(a.value),status:s.value};await set(ref(db,"matches/"+mid),saved);matches[mid]=saved;show($("matchesMsg"),"✅ Hasil tersimpan.");renderMatches()}catch(e){show($("matchesMsg"),"❌ "+e.message,true)}
+ try{const saved={...old,homeScore:h.value===""?null:Number(h.value),awayScore:a.value===""?null:Number(a.value),status:s.value};await withTimeout(set(ref(db,"matches/"+mid),saved));matches[mid]=saved;show($("matchesMsg"),"✅ Hasil tersimpan.");renderMatches()}catch(e){show($("matchesMsg"),"❌ "+e.message,true)}
 };
 function renderMatches(){
  $("adminMatches").innerHTML=schedule.map(([mid,g,a,b,date,time],i)=>{const m=matches[mid]||{};return `<div class="adminmatch"><div><b>${i+1}. ${mid} • Grup ${g}</b><small>${date} • ${time} WIB</small></div><div><b>${esc(teamName(groups[g][a]))}</b> <span class="muted">vs</span> <b>${esc(teamName(groups[g][b]))}</b></div><select id="s_${mid}"><option value="scheduled" ${m.status!=="live"&&m.status!=="finished"?"selected":""}>Terjadwal</option><option value="live" ${m.status==="live"?"selected":""}>LIVE</option><option value="finished" ${m.status==="finished"?"selected":""}>Selesai</option></select><input id="h_${mid}" type="number" min="0" value="${m.homeScore??""}" placeholder="Gol"><span>:</span><input id="a_${mid}" type="number" min="0" value="${m.awayScore??""}" placeholder="Gol"><button type="button" onclick="saveMatch('${mid}')">Simpan Hasil</button></div>`}).join("");
