@@ -143,3 +143,63 @@
   .group-card select,.group-card .team-select{width:320px!important;min-width:320px!important;max-width:320px!important;}
   #tables th:nth-child(2),#tables td:nth-child(2){width:290px!important;min-width:290px!important;max-width:290px!important;}
 }
+
+/* === FINAL RESPONSIVE TABLE SIZE === */
+/* Desktop: compact, centered, never stretch to the full panel */
+.group-card table,
+#tables table{
+  width: 790px !important;
+  min-width: 790px !important;
+  max-width: 790px !important;
+  margin: 0 auto !important;
+  table-layout: fixed !important;
+}
+.group-card th:nth-child(1), .group-card td:nth-child(1),
+#tables th:first-child, #tables td:first-child{
+  width: 38px !important;
+  min-width: 38px !important;
+  max-width: 38px !important;
+}
+.group-card th:nth-child(2), .group-card td:nth-child(2){
+  width: 340px !important;
+  min-width: 340px !important;
+  max-width: 340px !important;
+}
+.group-card th:nth-child(n+3), .group-card td:nth-child(n+3),
+#tables th:nth-child(n+3), #tables td:nth-child(n+3){
+  width: 51px !important;
+  min-width: 51px !important;
+  max-width: 51px !important;
+}
+.group-card select, .group-card .team-select{
+  width: 340px !important;
+  min-width: 340px !important;
+  max-width: 340px !important;
+}
+#tables th:nth-child(2), #tables td:nth-child(2){
+  width: 300px !important;
+  min-width: 300px !important;
+  max-width: 300px !important;
+}
+
+/* Phone: let the table become wider than the viewport and scroll horizontally */
+@media (max-width: 700px){
+  .group-card table, #tables table{
+    width: 790px !important;
+    min-width: 790px !important;
+    max-width: 790px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+  }
+  .group-card th:nth-child(2), .group-card td:nth-child(2),
+  .group-card select, .group-card .team-select{
+    width: 340px !important;
+    min-width: 340px !important;
+    max-width: 340px !important;
+  }
+  #tables th:nth-child(2), #tables td:nth-child(2){
+    width: 300px !important;
+    min-width: 300px !important;
+    max-width: 300px !important;
+  }
+}
