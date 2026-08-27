@@ -9,12 +9,10 @@ const defaults=["ARCAK PUTRA","TIGER","FIT JUNIOR","SUKAMANAH UNITED","FAMILY","
 let teams={},groups={A:["T1","T2","T3","T4"],B:["T5","T6","T7","T8"],C:["T9","T10","T11","T12"],D:["T13","T14","T15","T16"]},matches={},stats={};
 
 const schedule=[
-["M1","A",0,1,"2026-09-06","16:00"],["M2","B",0,1,"2026-09-12","13:30"],["M3","C",0,1,"2026-09-12","16:00"],["M4","D",0,1,"2026-09-13","08:00"],
-["M5","A",2,3,"2026-09-13","10:30"],["M6","B",2,3,"2026-09-13","13:30"],["M7","C",2,3,"2026-09-13","16:00"],["M8","D",2,3,"2026-09-19","13:30"],
-["M9","A",0,2,"2026-09-19","16:00"],["M10","B",0,2,"2026-09-20","10:30"],["M11","C",0,2,"2026-09-20","10:30"],["M12","D",0,2,"2026-09-20","13:30"],
-["M13","A",1,3,"2026-09-20","16:00"],["M14","B",1,3,"2026-09-26","13:30"],["M15","C",1,3,"2026-09-26","16:00"],["M16","D",1,3,"2026-09-27","08:00"],
-["M17","A",0,3,"2026-09-27","10:30"],["M18","B",0,3,"2026-09-27","13:30"],["M19","C",0,3,"2026-09-27","16:00"],["M20","D",0,3,"2026-10-03","13:30"],
-["M21","A",1,2,"2026-10-03","16:00"],["M22","B",1,2,"2026-10-04","08:00"],["M23","C",1,2,"2026-10-04","10:30"],["M24","D",1,2,"2026-10-04","13:30"]];
+["M1","A",0,1,"2026-09-06","16:00",1],["M2","A",2,3,"2026-09-13","10:30",1],["M3","B",0,1,"2026-09-12","13:30",1],["M4","B",2,3,"2026-09-13","13:30",1],["M5","C",0,1,"2026-09-12","16:00",1],["M6","C",2,3,"2026-09-13","16:00",1],["M7","D",0,1,"2026-09-13","08:00",1],["M8","D",2,3,"2026-09-19","13:30",1],
+["M9","A",0,2,"2026-09-19","16:00",2],["M10","A",1,3,"2026-09-20","16:00",2],["M11","B",0,2,"2026-09-20","10:30",2],["M12","B",1,3,"2026-09-26","13:30",2],["M13","C",0,2,"2026-09-20","10:30",2],["M14","C",1,3,"2026-09-26","16:00",2],["M15","D",0,2,"2026-09-20","13:30",2],["M16","D",1,3,"2026-09-27","08:00",2],
+["M17","A",0,3,"2026-09-27","10:30",3],["M18","A",1,2,"2026-10-03","16:00",3],["M19","B",0,3,"2026-09-27","13:30",3],["M20","B",1,2,"2026-10-04","08:00",3],["M21","C",0,3,"2026-09-27","16:00",3],["M22","C",1,2,"2026-10-04","10:30",3],["M23","D",0,3,"2026-10-03","13:30",3],["M24","D",1,2,"2026-10-04","13:30",3]
+];
 
 const emptyStats=()=>({main:0,win:0,draw:0,loss:0,gm:0,gk:0,sg:0,points:0});
 const id=i=>"T"+i;
@@ -102,7 +100,8 @@ window.saveMatch=async mid=>{
  try{const saved={...old,homeScore:h.value===""?null:Number(h.value),awayScore:a.value===""?null:Number(a.value),status:s.value};await withTimeout(set(ref(db,"matches/"+mid),saved));matches[mid]=saved;show($("matchesMsg"),"✅ Hasil tersimpan.");renderMatches()}catch(e){show($("matchesMsg"),"❌ "+e.message,true)}
 };
 function renderMatches(){
- $("adminMatches").innerHTML=schedule.map(([mid,g,a,b,date,time],i)=>{const m=matches[mid]||{};return `<div class="adminmatch"><div><b>${i+1}. ${mid} • Grup ${g}</b><small>${date} • ${time} WIB</small></div><div><b>${esc(teamName(groups[g][a]))}</b> <span class="muted">vs</span> <b>${esc(teamName(groups[g][b]))}</b></div><select id="s_${mid}"><option value="scheduled" ${m.status!=="live"&&m.status!=="finished"?"selected":""}>Terjadwal</option><option value="live" ${m.status==="live"?"selected":""}>LIVE</option><option value="finished" ${m.status==="finished"?"selected":""}>Selesai</option></select><input id="h_${mid}" type="number" min="0" value="${m.homeScore??""}" placeholder="Gol"><span>:</span><input id="a_${mid}" type="number" min="0" value="${m.awayScore??""}" placeholder="Gol"><button type="button" onclick="saveMatch('${mid}')">Simpan Hasil</button></div>`}).join("");
+ const byRound=[1,2,3].map(r=>schedule.filter(x=>x[6]===r));
+ $("adminMatches").innerHTML=byRound.map((round,ri)=>`<section class="round-block"><h3>Putaran ${ri+1}</h3>${round.map(([mid,g,a,b,date,time],j)=>{const m=matches[mid]||{};const n=ri*8+j+1;return `<div class="adminmatch"><div><b>${n}. Grup ${g}</b><small>${date} • ${time} WIB</small></div><div><b>${esc(teamName(groups[g][a]))}</b> <span class="muted">vs</span> <b>${esc(teamName(groups[g][b]))}</b></div><select id="s_${mid}"><option value="scheduled" ${m.status!=="live"&&m.status!=="finished"?"selected":""}>Terjadwal</option><option value="live" ${m.status==="live"?"selected":""}>LIVE</option><option value="finished" ${m.status==="finished"?"selected":""}>Selesai</option></select><input id="h_${mid}" type="number" min="0" value="${m.homeScore??""}" placeholder="Gol"><span>:</span><input id="a_${mid}" type="number" min="0" value="${m.awayScore??""}" placeholder="Gol"><button type="button" onclick="saveMatch('${mid}')">Simpan Hasil</button></div>`}).join("")}</section>`).join("");
 }
 function renderAll(){renderTeams();renderGroups();renderMatches()}
 $("loginBtn").onclick=async()=>{const e=$("username").value.trim(),p=$("password").value;$("loginMsg").textContent="Memproses...";try{const c=await signInWithEmailAndPassword(auth,e,p);if(c.user.email!==ADMIN_EMAIL){await signOut(auth);throw Error("Akun bukan admin.")}}catch(x){$("loginMsg").textContent="Login gagal: "+(x.code||x.message)}};
