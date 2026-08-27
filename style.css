@@ -11,3 +11,6 @@
 .round-block>h3{margin:0 0 10px;text-align:left;font-size:15px;color:#fff}
 .round-block .adminmatch,.round-block .match{margin:8px 0}
 @media(max-width:600px){.round-block{padding:10px}.round-block>h3{font-size:14px}}
+
+.round-group{margin:10px 0 14px;padding:8px;border:1px solid #1d3047;border-radius:10px;background:rgba(255,255,255,.02)}
+.round-group>h4{margin:0 0 7px;font-size:12px;color:#9fb0c9;letter-spacing:.4px}
