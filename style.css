@@ -203,3 +203,171 @@
     max-width: 300px !important;
   }
 }
+
+
+/* FINAL USER REQUEST: compact centered group panels on desktop; wider on phone */
+@media (min-width: 701px){
+  main{max-width:1100px!important;}
+  #adminBox > .panel:nth-child(2){
+    max-width:1040px!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+  }
+  .group-grid{align-items:center!important;}
+  .group-grid>.group-card{
+    width:1000px!important;
+    max-width:1000px!important;
+    margin-left:auto!important;
+    margin-right:auto!important;
+  }
+  .group-card table{
+    width:1000px!important;
+    min-width:1000px!important;
+    max-width:1000px!important;
+  }
+  .group-card th:nth-child(2),.group-card td:nth-child(2),
+  .group-card select,.group-card .team-select{
+    width:300px!important;min-width:300px!important;max-width:300px!important;
+  }
+  .group-card th:nth-child(n+3),.group-card td:nth-child(n+3){
+    width:76px!important;min-width:76px!important;max-width:76px!important;
+  }
+  .group-card input{width:54px!important;min-width:54px!important;max-width:54px!important;}
+
+  #tables{align-items:center!important;}
+  #tables>.card{width:1000px!important;max-width:1000px!important;}
+  #tables table{width:1000px!important;min-width:1000px!important;max-width:1000px!important;}
+  #tables th:nth-child(2),#tables td:nth-child(2){
+    width:300px!important;min-width:300px!important;max-width:300px!important;
+  }
+  #tables th:nth-child(n+3),#tables td:nth-child(n+3){
+    width:76px!important;min-width:76px!important;max-width:76px!important;
+  }
+}
+@media (max-width:700px){
+  main{max-width:none!important;}
+  .group-grid>.group-card,#tables>.card{width:100%!important;max-width:none!important;}
+  .group-card table,#tables table{
+    width:1000px!important;min-width:1000px!important;max-width:1000px!important;
+    margin-left:0!important;margin-right:0!important;
+  }
+  .group-card th:nth-child(2),.group-card td:nth-child(2),
+  .group-card select,.group-card .team-select,
+  #tables th:nth-child(2),#tables td:nth-child(2){
+    width:300px!important;min-width:300px!important;max-width:300px!important;
+  }
+  .group-card th:nth-child(n+3),.group-card td:nth-child(n+3),
+  #tables th:nth-child(n+3),#tables td:nth-child(n+3){
+    width:76px!important;min-width:76px!important;max-width:76px!important;
+  }
+}
+
+/* ===== FINAL GLOBAL WIDTH — semua panel mengikuti area kuning ===== */
+@media (min-width: 701px){
+  main{
+    width: 100%;
+    max-width: 1100px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+    padding-left: 50px !important;
+    padding-right: 50px !important;
+  }
+
+  main > .panel,
+  main > .hero,
+  main > section.panel,
+  #adminBox > .panel{
+    width: 1000px !important;
+    max-width: 1000px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  /* Grup A-D: panel utama dan setiap kartu sama-sama mengikuti lebar area */
+  #adminBox > .panel:nth-child(2),
+  #groupsForm,
+  .group-grid,
+  .group-grid > .group-card{
+    width: 1000px !important;
+    max-width: 1000px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  /* Semua tabel tetap compact di dalam area, tidak melebar ke garis merah */
+  .group-card table,
+  #tables table{
+    width: 1000px !important;
+    min-width: 1000px !important;
+    max-width: 1000px !important;
+  }
+
+  /* Kolom tim cukup untuk SUKAMANAH UNITED, kolom angka rapat */
+  .group-card th:nth-child(2),
+  .group-card td:nth-child(2),
+  .group-card select,
+  .group-card .team-select,
+  #tables th:nth-child(2),
+  #tables td:nth-child(2){
+    width: 300px !important;
+    min-width: 300px !important;
+    max-width: 300px !important;
+  }
+
+  .group-card th:nth-child(n+3),
+  .group-card td:nth-child(n+3),
+  #tables th:nth-child(n+3),
+  #tables td:nth-child(n+3){
+    width: 76px !important;
+    min-width: 76px !important;
+    max-width: 76px !important;
+  }
+
+  .group-card input{
+    width: 54px !important;
+    min-width: 54px !important;
+    max-width: 54px !important;
+  }
+
+  /* Jadwal, daftar tim, galeri, pertandingan, dll juga mengikuti kotak yang sama */
+  #adminMatches,
+  .next-match,
+  .gallery-section,
+  main > .team-list,
+  main > .teams,
+  .team-list,
+  .gallery,
+  .next-grid,
+  .knockout,
+  .schedule,
+  .teamform{
+    max-width: 1000px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+}
+
+@media (max-width: 700px){
+  /* HP: panel boleh penuh; tabel tetap bisa melebar dan digeser */
+  main{
+    width: 100% !important;
+    max-width: none !important;
+    padding-left: 12px !important;
+    padding-right: 12px !important;
+  }
+
+  main > .panel,
+  main > .hero,
+  main > section.panel,
+  #adminBox > .panel{
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  #groupsForm,
+  .group-grid,
+  .group-grid > .group-card{
+    width: 100% !important;
+    max-width: none !important;
+  }
+}
