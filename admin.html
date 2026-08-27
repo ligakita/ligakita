@@ -3,37 +3,7 @@
 <head>
 <meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
 <title>Admin Liga Kita</title>
-<link rel="stylesheet" href="style.css?v=20260827-clean-final2">
-<style>
-.group-grid{display:flex!important;flex-direction:column!important;gap:18px!important;width:100%!important}.group-card{width:100%!important}
-.group-card{background:#07111f;border:1px solid #263a55;border-radius:12px;padding:14px;overflow-x:auto;width:100%}
-.group-card h3{margin:0 0 10px}.group-card table{width:100%;border-collapse:collapse;min-width:0;table-layout:fixed}
-.group-card th,.group-card td{padding:7px;border-bottom:1px solid #263a55;text-align:center}
-.group-card th{color:#9fb0c9;font-size:12px}.group-card td:first-child{text-align:left}
-.group-card input,.group-card select{margin:0;padding:8px;min-width:70px}.group-card select{width:360px!important;min-width:360px!important;max-width:100%!important} .group-card td:nth-child(2){width:380px!important;min-width:520px!important}
-.master-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}.master-grid label{color:#9fb0c9}
-.savebar{display:flex;gap:10px;align-items:center;flex-wrap:wrap}.ok{color:#86efac}.err{color:#fca5a5}
-@media(max-width:800px){.master-grid{grid-template-columns:1fr}}
-
-/* FINAL: team name extra wide, numeric columns compact */
-.group-grid{display:flex!important;flex-direction:column!important;gap:20px!important;width:100%!important}
-.group-card{width:100%!important;overflow-x:auto!important}
-.group-card table{width:100%!important;min-width:1150px!important;table-layout:fixed!important}
-.group-card th:nth-child(1),.group-card td:nth-child(1){width:55px!important;min-width:55px!important}
-.group-card th:nth-child(2),.group-card td:nth-child(2){width:700px!important;min-width:700px!important;text-align:left!important;white-space:nowrap!important}
-.group-card th:nth-child(n+3),.group-card td:nth-child(n+3){width:55px!important;min-width:55px!important;padding-left:5px!important;padding-right:5px!important}
-.group-card .team-select{width:700px!important;min-width:700px!important;max-width:none!important}
-@media(max-width:700px){.group-card th:nth-child(2),.group-card td:nth-child(2){width:520px!important;min-width:520px!important}.group-card .team-select{width:520px!important;min-width:520px!important}}
-
-/* TIGHT FINAL: keep Tim close to numeric columns */
-.group-card table{width:880px!important;min-width:880px!important;max-width:880px!important;margin:0 auto!important;table-layout:fixed!important}
-.group-card th:nth-child(1),.group-card td:nth-child(1){width:42px!important;min-width:42px!important}
-.group-card th:nth-child(2),.group-card td:nth-child(2){width:390px!important;min-width:390px!important}
-.group-card th:nth-child(n+3),.group-card td:nth-child(n+3){width:56px!important;min-width:56px!important}
-.group-card .team-select,.group-card select{width:390px!important;min-width:390px!important}
-@media(max-width:900px){.group-card table{width:880px!important;min-width:880px!important}.group-card .team-select,.group-card select{width:390px!important;min-width:390px!important}}
-@media(max-width:600px){.group-card table{margin-left:0!important;margin-right:0!important}.group-card .team-select,.group-card select{width:330px!important;min-width:330px!important}}
-</style>
+<link rel="stylesheet" href="style.css?v=20260827-compact-real">
 </head>
 <body>
 <header class="site-header"><div class="brand"><div><h1>⚙️ ADMIN LIGA KITA</h1><p>16 Tim → Grup → Jadwal → Hasil → Web Publik</p></div></div><a class="btn" href="index.html">🌐 Web Publik</a></header>
@@ -60,5 +30,5 @@
 <section class="panel"><h2>4. Keluar / Web Publik</h2><button id="logout" class="secondary" type="button">Keluar</button></section>
 </section>
 </main>
-<script type="module" src="admin.js?v=20260827-clean-final2"></script>
+<script type="module" src="admin.js?v=20260827-compact-real"></script>
 </body></html>

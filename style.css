@@ -8,51 +8,138 @@
 
 .next-teams{margin-top:10px;text-align:center;font-size:17px;font-weight:800;line-height:1.55}.next-vs{font-size:12px;color:#8fa0b8;font-weight:700;text-transform:uppercase;letter-spacing:1px}.next-bottom{display:flex;align-items:center;justify-content:space-between;gap:10px;grid-column:1/-1}.next-score{font-size:24px;font-weight:900;white-space:nowrap}.next-card>.status{grid-column:auto}.next-card{grid-template-columns:1fr;grid-template-rows:auto auto}.next-info{grid-column:auto}.next-bottom .status{justify-self:start}
 
-/* FORCE GROUPS A-D VERTICAL */
-.group-grid{display:flex!important;flex-direction:column!important;gap:18px!important;width:100%!important}
-.group-grid>.group-card{width:100%!important;grid-column:auto!important}
-
-
-/* CLEAN FINAL LAYOUT - compact, centered, no empty gap between Tim and stats */
-.group-grid{display:flex!important;flex-direction:column!important;gap:18px!important;width:100%!important}
-.group-card{width:100%!important;overflow-x:auto!important}
+/* ===== KLASEMEN / GRUP FINAL - RAPAT & TERPUSAT ===== */
+.group-grid{
+  display:flex!important;
+  flex-direction:column!important;
+  gap:18px!important;
+  width:100%!important;
+}
+.group-grid>.group-card{
+  width:100%!important;
+}
+.group-card{
+  overflow-x:auto!important;
+  text-align:center!important;
+}
 .group-card table{
-  width:max-content!important;
+  display:table!important;
+  width:auto!important;
   min-width:0!important;
   max-width:none!important;
   margin:0 auto!important;
   table-layout:auto!important;
+  border-collapse:collapse!important;
 }
-.group-card th,.group-card td{padding:6px 7px!important;white-space:nowrap!important}
-.group-card th:nth-child(1),.group-card td:nth-child(1){width:38px!important;min-width:38px!important;text-align:center!important}
-.group-card th:nth-child(2),.group-card td:nth-child(2){width:310px!important;min-width:310px!important;max-width:310px!important;text-align:left!important}
-.group-card th:nth-child(n+3),.group-card td:nth-child(n+3){width:52px!important;min-width:52px!important;max-width:52px!important;text-align:center!important}
-.group-card select,.group-card .team-select{width:310px!important;min-width:310px!important;max-width:310px!important;margin:0!important}
-.group-card input{width:48px!important;min-width:48px!important;max-width:48px!important;padding:6px 3px!important;text-align:center!important;margin:0 auto!important}
+.group-card th,
+.group-card td{
+  padding:6px 6px!important;
+  white-space:nowrap!important;
+  vertical-align:middle!important;
+}
+.group-card th:nth-child(1),
+.group-card td:nth-child(1){
+  width:38px!important;
+  min-width:38px!important;
+  max-width:38px!important;
+  text-align:center!important;
+}
+.group-card th:nth-child(2),
+.group-card td:nth-child(2){
+  width:360px!important;
+  min-width:360px!important;
+  max-width:360px!important;
+  text-align:left!important;
+}
+.group-card th:nth-child(n+3),
+.group-card td:nth-child(n+3){
+  width:48px!important;
+  min-width:48px!important;
+  max-width:48px!important;
+  text-align:center!important;
+}
+.group-card select,
+.group-card .team-select{
+  display:block!important;
+  width:360px!important;
+  min-width:360px!important;
+  max-width:360px!important;
+  margin:0!important;
+}
+.group-card input{
+  width:42px!important;
+  min-width:42px!important;
+  max-width:42px!important;
+  padding:6px 2px!important;
+  margin:0 auto!important;
+  text-align:center!important;
+}
 
-/* PUBLIC: centered compact table */
-#tables{display:flex!important;flex-direction:column!important;gap:18px!important;width:100%!important;max-width:860px!important;margin:0 auto!important}
-#tables .card{width:100%!important;margin:0!important;overflow-x:auto!important;padding:14px!important}
-#tables .tablewrap{width:100%!important;overflow-x:auto!important}
+/* PUBLIC WEB: satu grup per baris, tabel rapat dan di tengah */
+#tables{
+  display:flex!important;
+  flex-direction:column!important;
+  align-items:center!important;
+  gap:18px!important;
+  width:100%!important;
+  max-width:none!important;
+  margin:0!important;
+}
+#tables>.card{
+  width:100%!important;
+  margin:0!important;
+  overflow-x:auto!important;
+  text-align:center!important;
+  padding:14px!important;
+}
+#tables .tablewrap{
+  width:100%!important;
+  overflow-x:auto!important;
+  text-align:center!important;
+}
 #tables table{
-  width:max-content!important;
+  display:table!important;
+  width:auto!important;
   min-width:0!important;
   max-width:none!important;
   margin:0 auto!important;
   table-layout:auto!important;
+  border-collapse:collapse!important;
 }
-#tables th,#tables td{padding:6px 7px!important;white-space:nowrap!important}
-#tables th:first-child,#tables td:first-child{width:38px!important;min-width:38px!important;text-align:center!important}
-#tables th:nth-child(2),#tables td:nth-child(2){width:310px!important;min-width:310px!important;max-width:310px!important;text-align:left!important;white-space:nowrap!important}
-#tables th:nth-child(n+3),#tables td:nth-child(n+3){width:52px!important;min-width:52px!important;max-width:52px!important;text-align:center!important}
+#tables th,
+#tables td{
+  padding:6px 6px!important;
+  white-space:nowrap!important;
+  vertical-align:middle!important;
+}
+#tables th:first-child,
+#tables td:first-child{
+  width:38px!important;
+  min-width:38px!important;
+  max-width:38px!important;
+  text-align:center!important;
+}
+#tables th:nth-child(2),
+#tables td:nth-child(2){
+  width:320px!important;
+  min-width:320px!important;
+  max-width:320px!important;
+  text-align:left!important;
+}
+#tables th:nth-child(n+3),
+#tables td:nth-child(n+3){
+  width:48px!important;
+  min-width:48px!important;
+  max-width:48px!important;
+  text-align:center!important;
+}
 
-@media(max-width:900px){
-  #tables{max-width:100%!important}
-  .group-card th:nth-child(2),.group-card td:nth-child(2),#tables th:nth-child(2),#tables td:nth-child(2){width:280px!important;min-width:280px!important;max-width:280px!important}
-  .group-card select,.group-card .team-select{width:280px!important;min-width:280px!important;max-width:280px!important}
-}
-@media(max-width:600px){
-  .group-card table,#tables table{margin-left:0!important;margin-right:0!important}
-  .group-card th:nth-child(2),.group-card td:nth-child(2),#tables th:nth-child(2),#tables td:nth-child(2){width:250px!important;min-width:250px!important;max-width:250px!important}
-  .group-card select,.group-card .team-select{width:250px!important;min-width:250px!important;max-width:250px!important}
+/* Jangan biarkan aturan grid 4 kolom mempengaruhi klasemen */
+.standings-grid{grid-template-columns:1fr!important;}
+
+@media(max-width:700px){
+  .group-card table,#tables table{margin-left:0!important;margin-right:0!important;}
+  .group-card th:nth-child(2),.group-card td:nth-child(2){width:320px!important;min-width:320px!important;max-width:320px!important;}
+  .group-card select,.group-card .team-select{width:320px!important;min-width:320px!important;max-width:320px!important;}
+  #tables th:nth-child(2),#tables td:nth-child(2){width:290px!important;min-width:290px!important;max-width:290px!important;}
 }
