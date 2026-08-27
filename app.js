@@ -13,7 +13,14 @@ function render(){const tl=$("teamList");if(tl)tl.innerHTML=Array.from({length:1
 const tb=$("tables");if(tb)tb.innerHTML=G.map(g=>`<div class="card"><h3>Grup ${g}</h3><div class="tablewrap"><table><thead><tr><th>Pos</th><th>Tim</th><th>Main</th><th>Menang</th><th>Seri</th><th>Kalah</th><th>GM</th><th>GK</th><th>SG</th><th>Poin</th></tr></thead><tbody>${standings(g).map((x,i)=>`<tr><td>${i+1}</td><td><b>${esc(x.name)}</b></td><td>${x.mp}</td><td>${x.w}</td><td>${x.d}</td><td>${x.l}</td><td>${x.gm}</td><td>${x.gk}</td><td>${x.sg}</td><td><b>${x.pt}</b></td></tr>`).join("")}</tbody></table></div></div>`).join("");
 const ml=$("matches");if(ml)ml.innerHTML=schedule.map(([id,g,a,b,date,time],i)=>{const m=matches[id]||{};return `<div class="match"><div><small>PERTANDINGAN ${i+1} • GRUP ${g}</small><strong>${esc(tn(groups[g][a]))} <span class="vs">VS</span> ${esc(tn(groups[g][b]))}</strong><small>${date} • ${time} WIB</small></div><div class="score">${m.homeScore??"-"} : ${m.awayScore??"-"}</div><div class="status ${m.status==="live"?"live":m.status==="finished"?"finished":""}">${m.status==="finished"?"SELESAI":m.status==="live"?"LIVE":"TERJADWAL"}</div></div>`}).join("");
 const n=schedule.find(([id])=>{const m=matches[id]||{};return m.status!=="finished"});if($("nextMatch")&&n)$("nextMatch").innerHTML=`<div class="next-card"><strong>${esc(tn(groups[n[1]][n[2]]))} <span class="vs">VS</span> ${esc(tn(groups[n[1]][n[3]]))}</strong><small>${n[4]} • ${n[5]} WIB • Grup ${n[1]}</small></div>`}
-async function load(){const [a,b,c,d]=await Promise.all([get(ref(db,"teams16")),get(ref(db,"groups")),get(ref(db,"matches")),get(ref(db,"stats"))]);const tv=a.exists()?a.val():{};teams={};for(let i=1;i<=16;i++)teams["T"+i]={name:tv["T"+i]?.name||tv["T"+i]||"Tim "+i};if(c.exists())matches=c.val();if(b.exists())groups=norm(b.val());stats=d.exists()?d.val():{};render()}
-load();onValue(ref(db,"teams16"),load);onValue(ref(db,"groups"),load);onValue(ref(db,"matches"),load);onValue(ref(db,"stats"),load);
+async function loadTeams(){try{const a=await get(ref(db,"teams16"));const tv=a.exists()?a.val():{};teams={};for(let i=1;i<=16;i++)teams["T"+i]={name:tv["T"+i]?.name||tv["T"+i]||"Tim "+i};render()}catch(e){console.error("LOAD TEAMS",e)}}
+async function loadGroups(){try{const b=await get(ref(db,"groups"));if(b.exists())groups=norm(b.val());render()}catch(e){console.error("LOAD GROUPS",e)}}
+async function loadMatches(){try{const c=await get(ref(db,"matches"));if(c.exists())matches=c.val();render()}catch(e){console.error("LOAD MATCHES",e)}}
+async function loadStats(){try{const d=await get(ref(db,"stats"));stats=d.exists()?d.val():{};render()}catch(e){console.error("LOAD STATS",e)}}
+loadTeams();loadGroups();loadMatches();loadStats();
+onValue(ref(db,"teams16"),snap=>{const tv=snap.exists()?snap.val():{};teams={};for(let i=1;i<=16;i++)teams["T"+i]={name:tv["T"+i]?.name||tv["T"+i]||"Tim "+i};render()});
+onValue(ref(db,"groups"),snap=>{if(snap.exists())groups=norm(snap.val());render()});
+onValue(ref(db,"matches"),snap=>{matches=snap.exists()?snap.val():{};render()});
+onValue(ref(db,"stats"),snap=>{stats=snap.exists()?snap.val():{};render()});
 
 /* Public standings are stacked vertically for easy screenshots */

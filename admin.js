@@ -62,7 +62,7 @@ function renderGroups(){
   }
   return `<div class="group-card"><h3>Grup ${g}</h3><table><thead><tr><th>No</th><th>Tim</th><th>Main</th><th>Menang</th><th>Seri</th><th>Kalah</th><th>GM</th><th>GK</th><th>SG</th><th>Poin</th></tr></thead><tbody>${rows}</tbody></table></div>`
  }).join("");
- document.querySelectorAll("[id^=grp_]").forEach(el=>el.addEventListener("change",()=>{readGroupsAndStats();renderGroups();renderMatches()}));
+ document.querySelectorAll("[id^=grp_]").forEach(el=>el.addEventListener("change",()=>{readGroupsAndStats();renderMatches()}));
 }
 function readGroupsAndStats(){
  for(const g of GROUPS)for(let i=0;i<4;i++){const e=$("grp_"+g+"_"+i);if(e)groups[g][i]=e.value}
@@ -78,18 +78,23 @@ $("saveTeams").onclick=async()=>{
  }catch(e){console.error("SAVE TEAMS",e);show($("teamsMsg"),"❌ SAVE GAGAL: "+e.message,true)}finally{b.disabled=false}
 };
 $("saveGroups").onclick=async()=>{
- const b=$("saveGroups");b.disabled=true;readGroupsAndStats();show($("groupsMsg"),"Menyimpan...");
+ const b=$("saveGroups");b.disabled=true;readGroupsAndStats();show($("groupsMsg"),"Menyimpan Grup + statistik + jadwal...");
  try{
-  const chosen=GROUPS.flatMap(g=>groups[g].filter(Boolean));if(new Set(chosen).size!==chosen.length)throw Error("Ada tim yang dipilih lebih dari satu grup.");
+  const chosen=GROUPS.flatMap(g=>groups[g].filter(Boolean));
+  if(new Set(chosen).size!==chosen.length)throw Error("Ada tim yang dipilih lebih dari satu grup.");
+  if(chosen.length!==16)throw Error("Pastikan semua 16 slot Grup A–D sudah terisi.");
   const u={};
   for(let i=1;i<=16;i++){const tid="T"+i;u["teams16/"+tid]={id:tid,name:teams[tid].name};u["teams/"+tid]={id:tid,name:teams[tid].name}}
   for(const g of GROUPS)for(let i=0;i<4;i++)u["groups/"+g+"/"+i]=groups[g][i]||null;
-  for(const [tid,st] of Object.entries(stats))u["stats/"+tid]=st;
+  for(const tid of Object.keys(teams)){const st=stats[tid]||emptyStats();u["stats/"+tid]={main:Number(st.main)||0,win:Number(st.win)||0,draw:Number(st.draw)||0,loss:Number(st.loss)||0,gm:Number(st.gm)||0,gk:Number(st.gk)||0,sg:Number(st.sg)||0,points:Number(st.points)||0}}
   for(const [mid,g,a,b,date,time] of schedule){const old=matches[mid]||{};u["matches/"+mid]={...old,id:mid,phase:"group",group:g,home:groups[g][a]||null,away:groups[g][b]||null,date,time,status:old.status||"scheduled",homeScore:old.homeScore??null,awayScore:old.awayScore??null}}
-  await update(ref(db),u);
-  const [gv,mv]=await Promise.all([get(ref(db,"groups")),get(ref(db,"matches"))]);if(!gv.exists()||!mv.exists())throw Error("Verifikasi setelah Save gagal.");
-  groups=normalizeGroups(gv.val());matches=mv.val();show($("groupsMsg"),"✅ SEMUA TERSIMPAN: Grup + klasemen + jadwal.");
-  renderAll();
+  await withTimeout(update(ref(db),u));
+  const [gv,mv,sv,tv]=await Promise.all([withTimeout(get(ref(db,"groups"))),withTimeout(get(ref(db,"matches"))),withTimeout(get(ref(db,"stats"))),withTimeout(get(ref(db,"teams16")))]);
+  if(!gv.exists()||!mv.exists()||!sv.exists()||!tv.exists())throw Error("Verifikasi Firebase setelah Save gagal.");
+  const savedGroups=normalizeGroups(gv.val()),savedStats=sv.val()||{};
+  for(const g of GROUPS)for(let i=0;i<4;i++)if((savedGroups[g][i]||"")!==(groups[g][i]||""))throw Error("Verifikasi Grup "+g+" gagal pada slot "+(i+1)+".");
+  for(const tid of chosen){const a=stats[tid]||emptyStats(),z=savedStats[tid]||{};for(const k of ["main","win","draw","loss","gm","gk","sg","points"])if(Number(z[k]??0)!==Number(a[k]??0))throw Error("Verifikasi statistik "+teamName(tid)+" gagal pada kolom "+k.toUpperCase()+".")}
+  groups=savedGroups;matches=mv.val();stats=savedStats;show($("groupsMsg"),"✅ TERSIMPAN & TERVERIFIKASI. Web publik akan ikut realtime.");renderAll();
  }catch(e){console.error("SAVE GROUPS",e);show($("groupsMsg"),"❌ SAVE GAGAL: "+e.message,true)}finally{b.disabled=false}
 };
 window.saveMatch=async mid=>{
