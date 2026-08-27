@@ -371,3 +371,230 @@
     max-width: none !important;
   }
 }
+
+/* =========================================================
+   FINAL LAYOUT — SEMUA PANEL, ADMIN + WEB PUBLIK
+   Desktop: compact centered area (1000px), never full-width.
+   Mobile: panels use screen width; tables remain wider and scroll.
+   ========================================================= */
+@media (min-width: 701px){
+  header.site-header{
+    padding-left: max(18px, calc((100% - 1000px)/2)) !important;
+    padding-right: max(18px, calc((100% - 1000px)/2)) !important;
+  }
+
+  main{
+    width: 1000px !important;
+    max-width: 1000px !important;
+    margin: 0 auto !important;
+    padding: 22px 0 !important;
+  }
+
+  /* Semua panel utama admin + publik */
+  main > .panel,
+  main > .hero,
+  #adminBox > .panel,
+  .next-match,
+  main > section.panel{
+    width: 1000px !important;
+    max-width: 1000px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  /* Semua isi utama ikut garis panel 1000px */
+  #teamsForm,
+  #groupsForm,
+  #adminMatches,
+  #matches,
+  #teamList,
+  .team-list,
+  .gallery-section,
+  .gallery,
+  .next-grid,
+  .knockout,
+  .savebar{
+    max-width: 1000px !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  /* Grup A-D selalu vertikal */
+  .group-grid{
+    width: 1000px !important;
+    max-width: 1000px !important;
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 18px !important;
+    align-items: stretch !important;
+  }
+
+  .group-grid > .group-card{
+    width: 100% !important;
+    max-width: 100% !important;
+    margin: 0 !important;
+    overflow-x: auto !important;
+  }
+
+  /* Tabel dibuat compact dan tetap di tengah panel */
+  .group-card table,
+  #tables table{
+    width: 900px !important;
+    min-width: 900px !important;
+    max-width: 900px !important;
+    margin: 0 auto !important;
+    table-layout: fixed !important;
+  }
+
+  .group-card th:first-child,
+  .group-card td:first-child,
+  #tables th:first-child,
+  #tables td:first-child{
+    width: 40px !important;
+    min-width: 40px !important;
+    max-width: 40px !important;
+    text-align: center !important;
+  }
+
+  /* Tim cukup untuk SUKAMANAH UNITED + dropdown */
+  .group-card th:nth-child(2),
+  .group-card td:nth-child(2),
+  .group-card select,
+  .group-card .team-select,
+  #tables th:nth-child(2),
+  #tables td:nth-child(2){
+    width: 260px !important;
+    min-width: 260px !important;
+    max-width: 260px !important;
+  }
+
+  /* Kolom angka kecil dan seragam */
+  .group-card th:nth-child(n+3),
+  .group-card td:nth-child(n+3),
+  #tables th:nth-child(n+3),
+  #tables td:nth-child(n+3){
+    width: 75px !important;
+    min-width: 75px !important;
+    max-width: 75px !important;
+    text-align: center !important;
+  }
+
+  .group-card select,
+  .group-card .team-select{
+    display: block !important;
+    margin: 0 !important;
+    padding: 8px 10px !important;
+  }
+
+  .group-card input{
+    width: 54px !important;
+    min-width: 54px !important;
+    max-width: 54px !important;
+    margin: 0 auto !important;
+    padding: 6px 2px !important;
+    text-align: center !important;
+  }
+
+  /* Public: Grup A-D satu per satu, sama-sama 1000px */
+  #tables{
+    width: 1000px !important;
+    max-width: 1000px !important;
+    margin: 0 auto !important;
+    display: flex !important;
+    flex-direction: column !important;
+    align-items: stretch !important;
+    gap: 18px !important;
+  }
+
+  #tables > .card{
+    width: 1000px !important;
+    max-width: 1000px !important;
+    margin: 0 !important;
+    overflow-x: auto !important;
+  }
+
+  #tables .tablewrap{
+    width: 100% !important;
+    overflow-x: auto !important;
+    text-align: center !important;
+  }
+
+  #tables table{
+    margin: 0 auto !important;
+  }
+
+  /* Jadwal/hasil dan daftar peserta juga tidak melebar */
+  #adminMatches,
+  #matches,
+  #teamList,
+  .team-list,
+  .next-grid{
+    width: 100% !important;
+    max-width: 1000px !important;
+  }
+}
+
+@media (max-width: 700px){
+  /* HP: semua panel mengikuti lebar layar */
+  main{
+    width: 100% !important;
+    max-width: none !important;
+    padding: 18px 12px !important;
+  }
+
+  main > .panel,
+  main > .hero,
+  #adminBox > .panel,
+  .next-match,
+  main > section.panel,
+  #groupsForm,
+  .group-grid,
+  .group-grid > .group-card,
+  #tables,
+  #tables > .card{
+    width: 100% !important;
+    max-width: none !important;
+  }
+
+  .group-grid{
+    display: flex !important;
+    flex-direction: column !important;
+    gap: 14px !important;
+  }
+
+  .group-grid > .group-card,
+  #tables > .card{
+    overflow-x: auto !important;
+  }
+
+  /* Di HP tabel boleh melebar; user geser horizontal */
+  .group-card table,
+  #tables table{
+    width: 900px !important;
+    min-width: 900px !important;
+    max-width: 900px !important;
+    margin-left: 0 !important;
+    margin-right: 0 !important;
+    table-layout: fixed !important;
+  }
+
+  .group-card th:nth-child(2),
+  .group-card td:nth-child(2),
+  .group-card select,
+  .group-card .team-select,
+  #tables th:nth-child(2),
+  #tables td:nth-child(2){
+    width: 260px !important;
+    min-width: 260px !important;
+    max-width: 260px !important;
+  }
+
+  .group-card th:nth-child(n+3),
+  .group-card td:nth-child(n+3),
+  #tables th:nth-child(n+3),
+  #tables td:nth-child(n+3){
+    width: 75px !important;
+    min-width: 75px !important;
+    max-width: 75px !important;
+  }
+}
